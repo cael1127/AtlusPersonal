@@ -1,0 +1,59 @@
+:root {
+  /* Metaphor-forward palette: ink + parchment + blood accent */
+  --c-ink: #0b0b0d;
+  --c-paper: #efe7d6;
+  --c-paper-2: #d8cfbb;
+  --c-blood: #c21b2a;
+  --c-gold: #caa34a;
+  --c-cyan: #53c7d6;
+  --c-ink-2: #141217;
+  --c-ember: #e65a2f;
+  --c-magenta: #c946a8;
+  --c-crimson: #d42070;
+
+  --c-ui: rgba(239, 231, 214, 0.08);
+  --c-ui-strong: rgba(239, 231, 214, 0.16);
+  --c-line: rgba(239, 231, 214, 0.28);
+
+  --shadow-ink: 0 12px 40px rgba(0, 0, 0, 0.55);
+  --shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.35);
+
+  /* Surface/text tokens (for parchment-style screens inside dark world) */
+  --c-surface: #efe7d6;
+  --c-surface-2: #e0d6c2;
+  --c-text: #0b0b0d;
+  --c-text-muted: rgba(11, 11, 13, 0.72);
+  --c-text-faint: rgba(11, 11, 13, 0.45);
+
+  /* Texture knobs */
+  --grain-opacity: 0.09;
+  --vignette-opacity: 0.62;
+
+  /* Type scale */
+  --font-command: "Bebas Neue", "Impact", "Arial Narrow", sans-serif;
+  --font-display: "Cinzel", ui-serif, Georgia, "Times New Roman", Times, serif;
+  --font-ui: "IM Fell English", ui-serif, Georgia, "Times New Roman", Times, serif;
+  --font-mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  --fz-hero: clamp(2.2rem, 3.6vw, 3.4rem);
+  --fz-title: clamp(1.35rem, 1.65vw, 1.8rem);
+  --fz-body: 1rem;
+  --fz-small: 0.9rem;
+
+  /* Motion tokens */
+  --dur-fast: 180ms;
+  --dur-med: 320ms;
+  --dur-slow: 700ms;
+  --ease-snap: cubic-bezier(0.2, 1.05, 0.15, 1);
+  --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 1ms;
+    --dur-med: 1ms;
+    --dur-slow: 1ms;
+  }
+}
+

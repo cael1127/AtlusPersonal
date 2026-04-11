@@ -1,95 +1,24 @@
-import { useEffect, useState } from "react";
-import { AmbientBackdrop } from "./components/fx/AmbientBackdrop";
-import { CommandScreen } from "./components/metaphor/CommandScreen";
-
-function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReduced(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
-
-  return reduced;
-}
+import { Route, Routes } from "react-router-dom";
+import { ROUTE_TRANSITION_META } from "./config/routeMeta";
+import { RootLayout } from "./layout/RootLayout";
+import AboutPage from "./pages/AboutPage";
+import ContactPage from "./pages/ContactPage";
+import ExperiencePage from "./pages/ExperiencePage";
+import { HomePage } from "./pages/HomePage";
+import ProjectsPage from "./pages/ProjectsPage";
+import SkillsPage from "./pages/SkillsPage";
 
 export default function App() {
-  const [menuOpen, setMenuOpen] = useState(true);
-  const reducedMotion = usePrefersReducedMotion();
-
   return (
-    <div className="AppRoot">
-      <AmbientBackdrop reducedMotion={reducedMotion} />
-
-      <div className="PageFrame">
-        <header className="TopBar">
-          <div className="BrandBlock">
-            <div className="BrandTitle">Persona Portfolio</div>
-            <div className="BrandSub">Metaphor-inspired menu prototype</div>
-          </div>
-
-          <button
-            className="UiButton"
-            type="button"
-            onClick={() => setMenuOpen(true)}
-          >
-            Open Menu
-          </button>
-        </header>
-
-        <main className="MainStage">
-          <section className="HeroPanel">
-            <h1 className="HeroTitle">Build a "game UI" website.</h1>
-            <p className="HeroBody">
-              This is the foundation: theme tokens, a keyboard-first menu shell,
-              choreographed motion primitives, and an ambient texture layer.
-            </p>
-            <div className="HeroRow">
-              <button
-                className="UiButton UiButton--primary"
-                type="button"
-                onClick={() => setMenuOpen(true)}
-              >
-                Enter Menu
-              </button>
-              <span className="HintPill">Press <kbd>M</kbd> to toggle</span>
-            </div>
-          </section>
-        </main>
-      </div>
-
-      <CommandScreen
-        open={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        reducedMotion={reducedMotion}
-      />
-
-      <MenuHotkeys
-        onToggle={() => setMenuOpen((v) => !v)}
-        disabled={false}
-      />
-    </div>
+    <Routes>
+      <Route element={<RootLayout transitionMap={ROUTE_TRANSITION_META} />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/skills" element={<SkillsPage />} />
+        <Route path="/experience" element={<ExperiencePage />} />
+        <Route path="/contact" element={<ContactPage />} />
+      </Route>
+    </Routes>
   );
-}
-
-function MenuHotkeys({
-  onToggle,
-  disabled,
-}: {
-  onToggle: () => void;
-  disabled: boolean;
-}) {
-  useEffect(() => {
-    if (disabled) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === "m") onToggle();
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onToggle, disabled]);
-
-  return null;
 }

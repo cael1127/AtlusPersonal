@@ -10,6 +10,12 @@ body {
   position: relative;
 }
 
+.PageTransition {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
 .PageFrame {
   position: relative;
   z-index: 1;
@@ -128,6 +134,14 @@ body {
   background: rgba(11, 11, 13, 0.35);
   padding: 9px 12px;
   border-radius: 999px;
+}
+
+.HintPill__code {
+  font-family: var(--font-mono);
+  font-size: 0.78em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(239, 231, 214, 0.08);
 }
 
 kbd {
@@ -845,10 +859,23 @@ kbd {
   transform-style: preserve-3d;
 }
 
+.CommandScreen__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.32;
+  z-index: 0;
+  pointer-events: none;
+  filter: saturate(0.85) contrast(1.05);
+}
+
 /* Background paint washes */
 .CommandScreen__bg {
   position: absolute;
   inset: -10%;
+  z-index: 1;
   background:
     radial-gradient(1400px 900px at 25% 30%, rgba(194, 27, 42, 0.18), transparent 58%),
     radial-gradient(1200px 800px at 70% 20%, rgba(202, 163, 74, 0.10), transparent 55%),
@@ -861,6 +888,7 @@ kbd {
 .CommandScreen__grain {
   position: absolute;
   inset: -20%;
+  z-index: 2;
   opacity: 0.12;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
   background-size: 260px 260px;
@@ -869,10 +897,77 @@ kbd {
   animation: grainShift 4s linear infinite;
 }
 
+.CommandScreen__scanlines {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.14) 3px,
+    rgba(0, 0, 0, 0.14) 4px
+  );
+  opacity: 0.35;
+}
+
+.CommandScreen__sceneMask {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgba(7, 7, 9, 0.9) 0%,
+    rgba(7, 7, 9, 0.55) 42%,
+    transparent 100%
+  );
+}
+
 .CommandScreen__vignette {
   position: absolute;
   inset: -15%;
+  z-index: 5;
   background: radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(0, 0, 0, 0.8) 80%);
+  pointer-events: none;
+}
+
+.CommandScreen__watermark {
+  position: absolute;
+  bottom: -2vw;
+  left: -1vw;
+  z-index: 5;
+  font-family: var(--font-command);
+  font-size: clamp(100px, 18vw, 240px);
+  letter-spacing: -0.04em;
+  line-height: 0.85;
+  color: rgba(239, 231, 214, 0.04);
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.CommandScreen__stripe {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: var(--c-blood);
+  z-index: 7;
+  pointer-events: none;
+}
+
+.CommandScreen__stripe2 {
+  position: absolute;
+  right: 9px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(194, 27, 42, 0.25);
+  z-index: 7;
   pointer-events: none;
 }
 
@@ -880,6 +975,7 @@ kbd {
 .CommandScreen__portrait {
   position: absolute;
   right: -4%;
+  z-index: 6;
   top: -8%;
   width: 62%;
   height: 116%;
@@ -923,12 +1019,14 @@ kbd {
   display: flex;
   flex-direction: column;
   gap: 0;
-  z-index: 2;
+  z-index: 8;
 }
 
 .CommandScreen__item {
   position: relative;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   text-align: left;
   font-family: var(--font-command);
   text-transform: uppercase;
@@ -971,6 +1069,28 @@ kbd {
 .CommandScreen__item:focus-visible {
   outline: 2px solid var(--c-gold);
   outline-offset: 4px;
+}
+
+.CommandScreen__itemLabelRow {
+  display: block;
+  transform-origin: left center;
+}
+
+.CommandScreen__itemLabel {
+  display: inline-block;
+  line-height: 0.82;
+}
+
+.CommandScreen__item--clip0 .CommandScreen__itemLabel {
+  clip-path: polygon(0% 8%, 94% 0%, 100% 44%, 90% 100%, 0% 94%);
+}
+
+.CommandScreen__item--clip1 .CommandScreen__itemLabel {
+  clip-path: polygon(4% 0%, 88% 6%, 100% 52%, 84% 100%, 0% 90%);
+}
+
+.CommandScreen__item--clip2 .CommandScreen__itemLabel {
+  clip-path: polygon(0% 10%, 86% 0%, 100% 46%, 78% 100%, 2% 92%);
 }
 
 .CommandScreen__itemSub {
@@ -1043,7 +1163,7 @@ kbd {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 4;
+  z-index: 9;
 }
 
 .CommandScreen__chromeCircle {
@@ -1109,7 +1229,7 @@ kbd {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  z-index: 5;
+  z-index: 10;
 }
 
 .CommandScreen__infoRow {
@@ -1144,7 +1264,7 @@ kbd {
   display: flex;
   justify-content: center;
   gap: 16px;
-  z-index: 5;
+  z-index: 10;
 }
 
 .CommandScreen__hintItem {
@@ -1187,4 +1307,1202 @@ kbd {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .CommandScreen__scanlines {
+    opacity: 0.12;
+  }
+}
 
+/* --- Routed section stubs --- */
+.PageFrame--section {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.SectionPage {
+  padding: clamp(20px, 3vw, 40px) 0 clamp(48px, 8vh, 80px);
+}
+
+.SectionPage__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(239, 231, 214, 0.72);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(239, 231, 214, 0.2);
+  padding-bottom: 4px;
+  margin-bottom: 28px;
+}
+
+.SectionPage__back:hover {
+  color: var(--c-paper);
+  border-color: rgba(194, 27, 42, 0.45);
+}
+
+.SectionPage__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  margin: 0 0 16px;
+  outline: none;
+}
+
+.SectionPage__body {
+  max-width: 65ch;
+  line-height: 1.6;
+  opacity: 0.92;
+}
+
+.SectionPage__body p {
+  margin: 0 0 12px;
+}
+
+.SectionPage__body code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(239, 231, 214, 0.08);
+}
+
+.SectionPage__hint {
+  margin-top: 32px;
+  font-size: var(--fz-small);
+  opacity: 0.55;
+}
+
+
+/* ============================================================
+   PHASED REBUILD — HIGH FIDELITY COMMAND MENU + PAGES
+   ============================================================ */
+.CommandScreen__scene {
+  isolation: isolate;
+}
+
+.CommandScreen__menuBackdrop {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+}
+
+.CommandScreen__gridGlow {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(239, 231, 214, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(239, 231, 214, 0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.22;
+  mask-image: radial-gradient(circle at 40% 45%, black 35%, transparent 85%);
+}
+
+.CommandScreen__menuOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background:
+    radial-gradient(1100px 520px at 30% 50%, rgba(194, 27, 42, 0.18), transparent 68%),
+    radial-gradient(900px 420px at 56% 44%, rgba(202, 163, 74, 0.14), transparent 66%);
+}
+
+.CommandScreen__confirmFlash {
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  pointer-events: none;
+  opacity: 0;
+  transform-origin: center;
+  background:
+    radial-gradient(circle at 26% 50%, rgba(239, 231, 214, 0.85), transparent 40%),
+    linear-gradient(
+      90deg,
+      rgba(194, 27, 42, 0.95) 0%,
+      rgba(194, 27, 42, 0.35) 34%,
+      rgba(239, 231, 214, 0) 72%
+    );
+  mix-blend-mode: screen;
+}
+
+.CommandScreen__menuStack {
+  max-width: min(72vw, 960px);
+  gap: clamp(2px, 0.35vw, 5px);
+}
+
+.CommandScreen__cursor {
+  position: absolute;
+  left: -14px;
+  width: calc(100% + 28px);
+  height: 70px;
+  border: 1px solid rgba(239, 231, 214, 0.38);
+  background: linear-gradient(
+    90deg,
+    rgba(194, 27, 42, 0.5),
+    rgba(194, 27, 42, 0.16),
+    rgba(239, 231, 214, 0.02)
+  );
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.42) inset,
+    0 0 22px rgba(194, 27, 42, 0.4);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+}
+
+.CommandScreen__item {
+  z-index: 1;
+  transition:
+    transform 230ms var(--ease-snap),
+    opacity 230ms var(--ease-soft),
+    filter 230ms var(--ease-soft),
+    color 180ms ease;
+}
+
+.CommandScreen__item::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  top: 50%;
+  width: 0;
+  height: 58%;
+  transform: translateY(-50%);
+  background: linear-gradient(
+    90deg,
+    rgba(194, 27, 42, 0.68),
+    rgba(194, 27, 42, 0.08)
+  );
+  transition: width 220ms var(--ease-snap), opacity 220ms var(--ease-soft);
+  pointer-events: none;
+  opacity: 0.68;
+}
+
+.CommandScreen__item--active::before {
+  width: clamp(220px, 24vw, 380px);
+  opacity: 1;
+}
+
+.CommandScreen__itemLabelRow {
+  position: relative;
+  padding: 0 0.08em;
+}
+
+.CommandScreen__itemLabel {
+  position: relative;
+  padding: 0.01em 0.06em;
+  line-height: 0.85;
+}
+
+.CommandScreen__itemLabel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(239, 231, 214, 0.14);
+  opacity: 0;
+  transition: opacity 180ms ease;
+  pointer-events: none;
+}
+
+.CommandScreen__item--active .CommandScreen__itemLabel::after {
+  opacity: 1;
+}
+
+.CommandScreen__itemSub {
+  margin-top: 1px;
+  margin-left: 0.3em;
+}
+
+.CommandScreen__menuChrome .CommandScreen__chromeLine--h {
+  bottom: clamp(94px, 13vh, 130px);
+}
+
+.CommandScreen__menuHints {
+  justify-content: flex-end;
+  padding-right: clamp(18px, 4vw, 54px);
+}
+
+.CommandScreen__menuHints .CommandScreen__hintItem {
+  border: 1px solid rgba(239, 231, 214, 0.14);
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: rgba(11, 11, 13, 0.24);
+}
+
+@media (max-width: 900px) {
+  .CommandScreen__menuStack {
+    max-width: calc(100vw - 42px);
+  }
+}
+
+@media (max-width: 680px) {
+  .CommandScreen__menuHints {
+    justify-content: center;
+    padding-right: 0;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+
+.SectionPage {
+  position: relative;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: clamp(16px, 2.6vw, 34px) 0 clamp(50px, 8vh, 88px);
+}
+
+.SectionPage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: 1px solid rgba(239, 231, 214, 0.16);
+  background:
+    radial-gradient(900px 320px at 16% 12%, rgba(194, 27, 42, 0.16), transparent 72%),
+    radial-gradient(700px 300px at 80% 18%, rgba(83, 199, 214, 0.11), transparent 72%),
+    linear-gradient(180deg, rgba(11, 11, 13, 0.73), rgba(11, 11, 13, 0.6));
+  box-shadow: var(--shadow-soft);
+}
+
+.SectionPage__header {
+  padding: clamp(18px, 2.6vw, 30px);
+  border-bottom: 1px solid rgba(239, 231, 214, 0.14);
+}
+
+.SectionPage__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.16em;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.SectionPage__eyebrow::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: rgba(194, 27, 42, 0.8);
+}
+
+.SectionPage__title {
+  margin-bottom: 8px;
+}
+
+.SectionPage__subtitle {
+  margin: 0;
+  max-width: 70ch;
+  line-height: 1.6;
+  opacity: 0.84;
+}
+
+.SectionPage__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.SectionPage__chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(239, 231, 214, 0.18);
+  background: rgba(239, 231, 214, 0.08);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.SectionPage__body {
+  max-width: none;
+  padding: clamp(18px, 2.6vw, 30px);
+}
+
+.SectionGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.SectionGrid--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.SectionCard {
+  border: 1px solid rgba(239, 231, 214, 0.16);
+  background: rgba(11, 11, 13, 0.48);
+  padding: clamp(14px, 2.1vw, 18px);
+}
+
+.SectionCard__title {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+}
+
+.SectionCard__meta {
+  margin: 0 0 10px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.72;
+}
+
+.SectionCard__body {
+  margin: 0;
+  line-height: 1.58;
+  opacity: 0.9;
+}
+
+.SectionList {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 8px;
+  line-height: 1.55;
+}
+
+.SectionTimeline {
+  display: grid;
+  gap: 12px;
+}
+
+.SectionTimeline__item {
+  border-left: 2px solid rgba(194, 27, 42, 0.72);
+  padding: 2px 0 2px 12px;
+}
+
+.SectionTimeline__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.SectionTimeline__role {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+
+.SectionTimeline__date {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.SectionActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.SectionActions__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(239, 231, 214, 0.2);
+  border-radius: 12px;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: var(--c-paper);
+  background: rgba(239, 231, 214, 0.08);
+}
+
+.SectionActions__button:hover {
+  border-color: rgba(194, 27, 42, 0.6);
+  background: rgba(194, 27, 42, 0.2);
+}
+
+@media (max-width: 780px) {
+  .SectionGrid--two {
+    grid-template-columns: 1fr;
+  }
+}
+
+.PageTransition {
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.PageTransition__veil {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.PageTransition__panel {
+  transform-origin: left center;
+}
+
+.PageTransition__panel--ink {
+  background: rgba(7, 7, 9, 0.95);
+}
+
+.PageTransition__panel--blood {
+  background: rgba(194, 27, 42, 0.9);
+}
+
+.PageTransition__panel--paper {
+  background: rgba(239, 231, 214, 0.88);
+}
+
+.PageTransition__veil[data-variant="slash"] .PageTransition__panel--ink {
+  background: linear-gradient(120deg, rgba(7, 7, 9, 0.96), rgba(34, 8, 12, 0.92));
+}
+
+.PageTransition__veil[data-variant="slash"] .PageTransition__panel--blood {
+  background: linear-gradient(105deg, rgba(194, 27, 42, 0.96), rgba(227, 76, 61, 0.9));
+}
+
+.PageTransition__veil[data-variant="column"] .PageTransition__panel--ink {
+  background: linear-gradient(180deg, rgba(12, 18, 42, 0.96), rgba(7, 7, 9, 0.92));
+}
+
+.PageTransition__veil[data-variant="column"] .PageTransition__panel--blood {
+  background: linear-gradient(180deg, rgba(83, 199, 214, 0.9), rgba(24, 120, 146, 0.85));
+}
+
+.PageTransition__veil[data-variant="about"] .PageTransition__panel--ink {
+  background: linear-gradient(110deg, rgba(6, 20, 50, 0.96), rgba(8, 10, 18, 0.94));
+}
+.PageTransition__veil[data-variant="about"] .PageTransition__panel--blood {
+  background: linear-gradient(110deg, rgba(83, 199, 214, 0.9), rgba(27, 130, 167, 0.92));
+}
+.PageTransition__veil[data-variant="projects"] .PageTransition__panel--ink {
+  background: rgba(10, 8, 12, 0.98);
+}
+.PageTransition__veil[data-variant="projects"] .PageTransition__panel--blood {
+  background: linear-gradient(90deg, rgba(194, 27, 42, 0.98), rgba(234, 66, 58, 0.93));
+}
+.PageTransition__veil[data-variant="skills"] .PageTransition__panel--ink {
+  background: linear-gradient(180deg, rgba(8, 16, 23, 0.96), rgba(4, 8, 12, 0.95));
+}
+.PageTransition__veil[data-variant="skills"] .PageTransition__panel--blood {
+  background: linear-gradient(180deg, rgba(66, 203, 221, 0.95), rgba(33, 112, 131, 0.9));
+}
+.PageTransition__veil[data-variant="experience"] .PageTransition__panel--ink {
+  background: linear-gradient(180deg, rgba(28, 19, 11, 0.96), rgba(9, 8, 10, 0.95));
+}
+.PageTransition__veil[data-variant="experience"] .PageTransition__panel--blood {
+  background: linear-gradient(180deg, rgba(202, 163, 74, 0.95), rgba(160, 111, 47, 0.9));
+}
+.PageTransition__veil[data-variant="contact"] .PageTransition__panel--ink {
+  background: linear-gradient(90deg, rgba(26, 10, 14, 0.96), rgba(12, 8, 11, 0.95));
+}
+.PageTransition__veil[data-variant="contact"] .PageTransition__panel--blood {
+  background: linear-gradient(90deg, rgba(194, 27, 42, 0.96), rgba(239, 113, 121, 0.92));
+}
+
+/* Route-specific page looks */
+.SectionPage--about::before {
+  background:
+    radial-gradient(820px 280px at 18% 20%, rgba(83, 199, 214, 0.16), transparent 72%),
+    radial-gradient(640px 260px at 82% 20%, rgba(202, 163, 74, 0.16), transparent 70%),
+    linear-gradient(180deg, rgba(10, 14, 22, 0.78), rgba(12, 16, 26, 0.64));
+}
+
+.SectionPage--about .SectionCard {
+  border-color: rgba(83, 199, 214, 0.26);
+}
+
+.SectionPage--projects::before {
+  background:
+    repeating-linear-gradient(
+      -20deg,
+      rgba(194, 27, 42, 0.08) 0,
+      rgba(194, 27, 42, 0.08) 10px,
+      transparent 10px,
+      transparent 30px
+    ),
+    radial-gradient(860px 320px at 12% 16%, rgba(194, 27, 42, 0.22), transparent 72%),
+    linear-gradient(180deg, rgba(20, 8, 11, 0.78), rgba(12, 8, 10, 0.62));
+}
+
+.SectionPage--projects .SectionCard {
+  border-color: rgba(194, 27, 42, 0.3);
+  box-shadow: 0 12px 28px rgba(194, 27, 42, 0.12);
+}
+
+.SectionPage--skills::before {
+  background:
+    radial-gradient(760px 300px at 78% 18%, rgba(83, 199, 214, 0.2), transparent 70%),
+    radial-gradient(640px 260px at 16% 72%, rgba(194, 27, 42, 0.12), transparent 70%),
+    linear-gradient(180deg, rgba(8, 18, 22, 0.76), rgba(8, 12, 15, 0.62));
+}
+
+.SectionPage--skills .SectionCard {
+  border-color: rgba(83, 199, 214, 0.25);
+  background: rgba(8, 18, 22, 0.45);
+}
+
+.SectionPage--experience::before {
+  background:
+    radial-gradient(720px 280px at 22% 22%, rgba(202, 163, 74, 0.2), transparent 70%),
+    radial-gradient(900px 420px at 90% 80%, rgba(194, 27, 42, 0.14), transparent 70%),
+    linear-gradient(180deg, rgba(26, 17, 10, 0.78), rgba(15, 12, 9, 0.64));
+}
+
+.SectionPage--experience .SectionTimeline__item {
+  border-left-color: rgba(202, 163, 74, 0.9);
+}
+
+.SectionPage--contact::before {
+  background:
+    radial-gradient(760px 300px at 78% 18%, rgba(194, 27, 42, 0.24), transparent 72%),
+    radial-gradient(620px 250px at 16% 80%, rgba(239, 231, 214, 0.1), transparent 70%),
+    linear-gradient(180deg, rgba(22, 10, 12, 0.82), rgba(15, 10, 11, 0.66));
+}
+
+.SectionPage--contact .SectionActions__button {
+  border-color: rgba(194, 27, 42, 0.46);
+}
+
+/* ============================================================
+   BESPOKE ROUTE SCREENS
+   ============================================================ */
+.AboutScreen,
+.ProjectsScreen,
+.SkillsScreen,
+.ExperienceScreen,
+.ContactScreen {
+  min-height: calc(100vh - 28px);
+}
+
+.AboutScreen__header,
+.ProjectsScreen__header,
+.SkillsScreen__header,
+.ExperienceScreen__header,
+.ContactScreen__header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.AboutScreen__back,
+.ProjectsScreen__back,
+.SkillsScreen__back,
+.ExperienceScreen__back,
+.ContactScreen__back {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  color: rgba(239, 231, 214, 0.82);
+  text-decoration: none;
+  border: 1px solid rgba(239, 231, 214, 0.2);
+  padding: 5px 8px;
+}
+
+.AboutScreen__title,
+.ProjectsScreen__title,
+.SkillsScreen__title,
+.ExperienceScreen__title,
+.ContactScreen__title {
+  margin: 0;
+  font-family: var(--font-command);
+  letter-spacing: 0.03em;
+  font-size: clamp(2.1rem, 6.2vw, 4.4rem);
+  line-height: 0.9;
+}
+
+/* About screen */
+.AboutScreen__eyebrow {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.AboutScreen__body {
+  display: grid;
+  grid-template-columns: minmax(280px, 40%) 1fr;
+  gap: 14px;
+}
+.AboutScreen__list {
+  display: grid;
+  gap: 8px;
+}
+.AboutScreen__row {
+  border: none;
+  background: rgba(8, 15, 30, 0.72);
+  color: var(--c-paper);
+  text-align: left;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  min-height: 76px;
+  clip-path: polygon(0 0, 98% 0, 100% 100%, 2% 100%);
+  box-shadow: 0 8px 0 rgba(6, 10, 22, 0.72);
+}
+.AboutScreen__rowRole {
+  font-family: var(--font-command);
+  font-size: 1.25rem;
+  min-width: 72px;
+  color: rgba(83, 199, 214, 0.9);
+  text-align: center;
+  background: rgba(10, 19, 40, 0.9);
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+.AboutScreen__rowMain {
+  display: grid;
+  gap: 4px;
+  padding: 12px 22px 10px 4px;
+}
+.AboutScreen__rowLabel {
+  font-family: var(--font-command);
+  letter-spacing: 0.05em;
+  font-size: 1.22rem;
+}
+.AboutScreen__rowTitle {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.76;
+}
+.AboutScreen__row.is-active {
+  background: linear-gradient(90deg, rgba(83, 199, 214, 0.28), rgba(11, 16, 24, 0.82));
+  box-shadow: 10px 8px 0 rgba(194, 27, 42, 0.62);
+}
+.AboutScreen__panel {
+  border: 1px solid rgba(83, 199, 214, 0.28);
+  background: linear-gradient(180deg, rgba(6, 20, 48, 0.72), rgba(10, 11, 19, 0.82));
+  padding: 0;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 18px) 100%, 0 100%);
+  transform: translateX(18px) rotate(-1.2deg);
+  opacity: 0.72;
+  transition: transform 240ms var(--ease-snap), opacity 220ms var(--ease-soft);
+}
+.AboutScreen__panel.is-revealed {
+  transform: translateX(0) rotate(0deg);
+  opacity: 1;
+}
+.AboutScreen__panelTop {
+  background: linear-gradient(90deg, rgba(83, 199, 214, 0.94), rgba(138, 230, 238, 0.9));
+  color: #08153f;
+  padding: 12px 14px;
+}
+.AboutScreen__panelTag {
+  font-family: var(--font-mono);
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: rgba(8, 21, 63, 0.95);
+}
+.AboutScreen__panelTitle {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+}
+.AboutScreen__panelLines {
+  padding: 14px;
+}
+.AboutScreen__panelLines p {
+  margin: 0 0 12px;
+  line-height: 1.58;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 8px;
+}
+.AboutScreen__lineIndex {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  opacity: 0.72;
+  margin-top: 2px;
+}
+.AboutScreen__panelHint {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  opacity: 0.66;
+  border-top: 1px solid rgba(239, 231, 214, 0.14);
+  padding: 10px 14px 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Projects screen */
+.ProjectsScreen__layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 48%) 1fr;
+  gap: 14px;
+}
+.ProjectsScreen__list {
+  display: grid;
+  gap: 8px;
+}
+.ProjectsScreen__card {
+  border: none;
+  background: linear-gradient(90deg, rgba(30, 12, 16, 0.85), rgba(12, 8, 10, 0.85));
+  color: var(--c-paper);
+  text-align: left;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "badge main progress"
+    "badge main progress";
+  gap: 3px 12px;
+  padding: 12px 22px 12px 12px;
+  border-left: 4px solid rgba(194, 27, 42, 0.75);
+  clip-path: polygon(0 0, 98% 0, 100% 100%, 2% 100%);
+}
+.ProjectsScreen__badge {
+  grid-area: badge;
+  font-family: var(--font-command);
+  font-size: 1.25rem;
+  color: rgba(239, 231, 214, 0.9);
+}
+.ProjectsScreen__cardMain {
+  grid-area: main;
+  display: grid;
+  gap: 4px;
+}
+.ProjectsScreen__name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+}
+.ProjectsScreen__sub {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  opacity: 0.72;
+  text-transform: uppercase;
+}
+.ProjectsScreen__progress {
+  grid-area: progress;
+  align-self: center;
+  font-family: var(--font-command);
+  font-size: 1.4rem;
+  color: rgba(239, 231, 214, 0.86);
+}
+.ProjectsScreen__card.is-active {
+  background: linear-gradient(90deg, rgba(194, 27, 42, 0.42), rgba(18, 9, 11, 0.9));
+  box-shadow: 10px 8px 0 rgba(202, 163, 74, 0.45);
+}
+.ProjectsScreen__detail {
+  border: 1px solid rgba(194, 27, 42, 0.42);
+  background: rgba(12, 8, 10, 0.8);
+  padding: 16px 22px 16px 16px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+}
+.ProjectsScreen__detailTop {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: end;
+  gap: 10px;
+}
+.ProjectsScreen__detailIndex {
+  font-family: var(--font-command);
+  font-size: 1.5rem;
+}
+.ProjectsScreen__detailProgress {
+  font-family: var(--font-command);
+  font-size: 1.4rem;
+  color: rgba(202, 163, 74, 0.95);
+}
+.ProjectsScreen__detailTitle {
+  margin: 0;
+  font-family: var(--font-display);
+}
+.ProjectsScreen__detailSub {
+  margin: 6px 0 12px;
+  opacity: 0.78;
+}
+.ProjectsScreen__detailList {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+/* Skills screen */
+.SkillsScreen__layout {
+  display: grid;
+  grid-template-columns: minmax(340px, 50%) 1fr;
+  gap: 14px;
+}
+.SkillsScreen__wheel {
+  display: grid;
+  gap: 10px;
+}
+.SkillsScreen__node {
+  border: 1px solid rgba(83, 199, 214, 0.32);
+  background: rgba(9, 21, 27, 0.76);
+  color: var(--c-paper);
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px 12px 12px;
+  grid-template-columns: 1fr auto auto;
+  display: grid;
+  gap: 8px;
+}
+.SkillsScreen__nodeLabel {
+  font-family: var(--font-display);
+}
+.SkillsScreen__nodePct {
+  font-family: var(--font-command);
+  color: rgba(83, 199, 214, 0.95);
+  font-size: 1.2rem;
+}
+.SkillsScreen__nodeScore {
+  font-family: var(--font-command);
+  color: rgba(239, 231, 214, 0.86);
+}
+.SkillsScreen__node.is-active {
+  background: linear-gradient(90deg, rgba(83, 199, 214, 0.3), rgba(8, 17, 22, 0.88));
+  box-shadow: 8px 8px 0 rgba(17, 90, 110, 0.4);
+}
+.SkillsScreen__panel {
+  border: 1px solid rgba(83, 199, 214, 0.35);
+  background: rgba(7, 14, 18, 0.84);
+  padding: 16px 22px 16px 16px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+}
+.SkillsScreen__panelTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+.SkillsScreen__panel h2 {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+}
+.SkillsScreen__panelScore {
+  font-family: var(--font-command);
+  font-size: 1.4rem;
+  color: rgba(83, 199, 214, 0.95);
+}
+.SkillsScreen__meter {
+  height: 10px;
+  border: 1px solid rgba(83, 199, 214, 0.4);
+  margin-bottom: 12px;
+}
+.SkillsScreen__meterFill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(83, 199, 214, 0.95), rgba(41, 128, 155, 0.9));
+}
+.SkillsScreen__panelList {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 8px;
+}
+
+/* Experience screen */
+.ExperienceScreen__layout {
+  display: grid;
+  grid-template-columns: minmax(330px, 45%) 1fr;
+  gap: 14px;
+}
+.ExperienceScreen__timeline {
+  display: grid;
+  gap: 8px;
+}
+.ExperienceScreen__entry {
+  border: 1px solid rgba(202, 163, 74, 0.36);
+  background: rgba(22, 15, 10, 0.78);
+  color: var(--c-paper);
+  text-align: left;
+  padding: 12px 20px 12px 14px;
+  display: grid;
+  gap: 4px;
+  border-left: 5px solid rgba(202, 163, 74, 0.7);
+}
+.ExperienceScreen__entryRole {
+  font-family: var(--font-display);
+}
+.ExperienceScreen__entryPeriod {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.ExperienceScreen__entry.is-active {
+  background: linear-gradient(90deg, rgba(202, 163, 74, 0.24), rgba(18, 14, 10, 0.88));
+}
+.ExperienceScreen__detail {
+  border: 1px solid rgba(202, 163, 74, 0.36);
+  background: rgba(16, 13, 10, 0.84);
+  padding: 16px 22px 16px 16px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+}
+.ExperienceScreen__detailTop {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 10px;
+}
+.ExperienceScreen__detail h2 {
+  margin: 0;
+  font-family: var(--font-display);
+}
+.ExperienceScreen__detailRank {
+  font-family: var(--font-command);
+  color: rgba(202, 163, 74, 0.9);
+  font-size: 1.3rem;
+}
+.ExperienceScreen__detailPeriod {
+  font-family: var(--font-mono);
+  margin: 8px 0 12px;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+.ExperienceScreen__detail ul {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 8px;
+}
+
+/* Contact screen */
+.ContactScreen__layout {
+  display: grid;
+  grid-template-columns: minmax(340px, 48%) 1fr;
+  gap: 14px;
+}
+.ContactScreen__list {
+  display: grid;
+  gap: 8px;
+}
+.ContactScreen__row {
+  border: 1px solid rgba(194, 27, 42, 0.36);
+  background: rgba(20, 9, 12, 0.8);
+  color: var(--c-paper);
+  text-decoration: none;
+  display: grid;
+  gap: 4px;
+  padding: 12px 20px 12px 12px;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "label metric"
+    "value metric";
+  align-items: center;
+  clip-path: polygon(0 0, 98% 0, 100% 100%, 2% 100%);
+}
+.ContactScreen__rowLabel {
+  grid-area: label;
+  font-family: var(--font-display);
+}
+.ContactScreen__rowValue {
+  grid-area: value;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  opacity: 0.78;
+  letter-spacing: 0.06em;
+}
+.ContactScreen__rowMetric {
+  grid-area: metric;
+  font-family: var(--font-command);
+  font-size: 1.25rem;
+}
+.ContactScreen__row.is-active {
+  background: linear-gradient(90deg, rgba(194, 27, 42, 0.35), rgba(15, 8, 10, 0.9));
+  box-shadow: 8px 8px 0 rgba(126, 29, 37, 0.46);
+}
+.ContactScreen__panel {
+  border: 1px solid rgba(194, 27, 42, 0.42);
+  background: rgba(15, 8, 10, 0.86);
+  padding: 16px 22px 16px 16px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+}
+.ContactScreen__panelTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.ContactScreen__panelMetric {
+  font-family: var(--font-command);
+  font-size: 1.25rem;
+  color: rgba(239, 113, 121, 0.9);
+}
+.ContactScreen__panel h2 {
+  margin: 0;
+  font-family: var(--font-display);
+}
+.ContactScreen__panel p {
+  margin: 8px 0 14px;
+  line-height: 1.55;
+}
+.ContactScreen__open {
+  display: inline-block;
+  text-decoration: none;
+  color: var(--c-paper);
+  border: 1px solid rgba(194, 27, 42, 0.5);
+  padding: 8px 10px;
+}
+
+@media (max-width: 900px) {
+  .AboutScreen__body,
+  .ProjectsScreen__layout,
+  .SkillsScreen__layout,
+  .ExperienceScreen__layout,
+  .ContactScreen__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (hover: none) {
+  .UiButton:hover {
+    transform: none;
+    border-color: rgba(239, 231, 214, 0.22);
+    background: rgba(239, 231, 214, 0.08);
+  }
+  .MenuShell__close:hover {
+    color: rgba(239, 231, 214, 0.82);
+    border-color: rgba(239, 231, 214, 0.28);
+  }
+  .CommandScreen__item:hover:not(.CommandScreen__item--active) {
+    color: rgba(239, 231, 214, 0.92);
+    opacity: 0.82;
+    text-shadow: none;
+  }
+  .MenuList__item:hover::before {
+    opacity: 0;
+  }
+  .MenuList__item:hover .MenuList__label--overlay {
+    opacity: 0;
+  }
+  .SectionPage__back:hover {
+    color: rgba(239, 231, 214, 0.72);
+    border-color: rgba(239, 231, 214, 0.2);
+  }
+  .SectionActions__button:hover {
+    border-color: rgba(239, 231, 214, 0.2);
+    background: rgba(239, 231, 214, 0.08);
+  }
+  .ContactScreen__row:hover {
+    background: rgba(20, 9, 12, 0.8);
+    box-shadow: none;
+  }
+}
+
+/* ============================================================
+   METAPHOR THEME OVERRIDES (keep reference-like structure)
+   ============================================================ */
+.PageTransition__veil[data-variant="about"] .PageTransition__panel--ink {
+  background: linear-gradient(110deg, rgba(21, 14, 11, 0.97), rgba(8, 8, 10, 0.94));
+}
+.PageTransition__veil[data-variant="about"] .PageTransition__panel--blood {
+  background: linear-gradient(110deg, rgba(202, 163, 74, 0.92), rgba(140, 98, 42, 0.92));
+}
+.PageTransition__veil[data-variant="skills"] .PageTransition__panel--blood {
+  background: linear-gradient(180deg, rgba(202, 163, 74, 0.95), rgba(130, 89, 38, 0.9));
+}
+.PageTransition__veil[data-variant="contact"] .PageTransition__panel--blood {
+  background: linear-gradient(90deg, rgba(194, 27, 42, 0.95), rgba(140, 28, 33, 0.92));
+}
+
+.AboutScreen__rowRole {
+  color: rgba(202, 163, 74, 0.94);
+  background: rgba(24, 18, 12, 0.92);
+}
+.AboutScreen__row.is-active {
+  background: linear-gradient(90deg, rgba(202, 163, 74, 0.28), rgba(20, 15, 12, 0.86));
+}
+.AboutScreen__panel {
+  border-color: rgba(202, 163, 74, 0.36);
+  background: linear-gradient(180deg, rgba(31, 22, 14, 0.76), rgba(10, 9, 11, 0.86));
+}
+.AboutScreen__panelTop {
+  background: linear-gradient(90deg, rgba(202, 163, 74, 0.95), rgba(231, 210, 160, 0.9));
+  color: #15110f;
+}
+.AboutScreen__panelTag {
+  color: rgba(28, 20, 12, 0.94);
+}
+
+.ProjectsScreen__card {
+  background: linear-gradient(90deg, rgba(28, 14, 12, 0.88), rgba(13, 10, 10, 0.88));
+  border-left-color: rgba(202, 163, 74, 0.75);
+}
+.ProjectsScreen__card.is-active {
+  background: linear-gradient(90deg, rgba(194, 27, 42, 0.34), rgba(24, 14, 12, 0.9));
+  box-shadow: 10px 8px 0 rgba(202, 163, 74, 0.36);
+}
+.ProjectsScreen__detail {
+  border-color: rgba(202, 163, 74, 0.45);
+  background: rgba(19, 13, 11, 0.84);
+}
+.ProjectsScreen__detailProgress {
+  color: rgba(202, 163, 74, 0.95);
+}
+
+.SkillsScreen__node {
+  border-color: rgba(202, 163, 74, 0.34);
+  background: rgba(22, 17, 12, 0.78);
+}
+.SkillsScreen__nodePct {
+  color: rgba(202, 163, 74, 0.95);
+}
+.SkillsScreen__node.is-active {
+  background: linear-gradient(90deg, rgba(202, 163, 74, 0.26), rgba(20, 14, 11, 0.9));
+  box-shadow: 8px 8px 0 rgba(96, 66, 28, 0.44);
+}
+.SkillsScreen__panel {
+  border-color: rgba(202, 163, 74, 0.4);
+  background: rgba(18, 13, 10, 0.86);
+}
+.SkillsScreen__panelScore {
+  color: rgba(202, 163, 74, 0.95);
+}
+.SkillsScreen__meter {
+  border-color: rgba(202, 163, 74, 0.45);
+}
+.SkillsScreen__meterFill {
+  background: linear-gradient(90deg, rgba(202, 163, 74, 0.95), rgba(120, 81, 35, 0.9));
+}
+
+.ExperienceScreen__entry {
+  border-color: rgba(202, 163, 74, 0.46);
+  background: rgba(25, 18, 12, 0.82);
+}
+.ExperienceScreen__entry.is-active {
+  background: linear-gradient(90deg, rgba(202, 163, 74, 0.3), rgba(24, 16, 11, 0.9));
+}
+.ExperienceScreen__detail {
+  border-color: rgba(202, 163, 74, 0.45);
+  background: rgba(19, 14, 11, 0.88);
+}
+
+.ContactScreen__row {
+  border-color: rgba(194, 27, 42, 0.46);
+  background: rgba(24, 11, 12, 0.84);
+}
+.ContactScreen__row.is-active {
+  background: linear-gradient(90deg, rgba(194, 27, 42, 0.35), rgba(25, 13, 11, 0.92));
+}
+@media (hover: hover) {
+  .ContactScreen__row:hover {
+    background: linear-gradient(90deg, rgba(194, 27, 42, 0.35), rgba(25, 13, 11, 0.92));
+  }
+}
+.ContactScreen__panel {
+  border-color: rgba(194, 27, 42, 0.52);
+  background: rgba(19, 10, 11, 0.88);
+}

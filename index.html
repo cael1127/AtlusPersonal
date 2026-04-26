@@ -1,18 +1,1343 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Persona Portfolio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;600;800&family=IM+Fell+English:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cael Findley · Royal Codex</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Cinzel+Decorative:wght@700&family=IM+Fell+English:ital@0;1&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-void: #05060e;
+      --bg-deep: #08091a;
+      --bg-midnight: #0a1535;
+      --bg-panel: rgba(8, 6, 14, 0.95);
+      --bg-panel-2: rgba(12, 10, 24, 0.9);
+      --gold-pale: #f5ecc8;
+      --gold-light: #e8d080;
+      --gold-mid: #c9a84c;
+      --gold-deep: #8a6a1e;
+      --gold-glow: rgba(201, 168, 76, 0.15);
+      --crimson: #8b1a1a;
+      --crimson-light: #c42b2b;
+      --teal: #00e5c8;
+      --parch-bright: #f5f0e8;
+      --parch-mid: #e8dfc0;
+      --parch-dim: #b8a882;
+      --border-gold: rgba(201, 168, 76, 0.4);
+      --border-gold-2: rgba(201, 168, 76, 0.62);
+      --border-dim: rgba(232, 223, 192, 0.12);
+      --font-display: "Cinzel Decorative", serif;
+      --font-heading: "Cinzel", serif;
+      --font-body: "IM Fell English", serif;
+      --font-mono: "Share Tech Mono", monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--bg-void);
+      color: var(--parch-mid);
+      font-family: var(--font-body);
+      cursor: none;
+    }
+    body.loading * { visibility: hidden; }
+    body.loading #loader, body.loading #loader * { visibility: visible; }
+    body.ready * { visibility: visible; }
+    :focus-visible { outline: 1px solid var(--gold-mid); outline-offset: 3px; }
+    .skip-link {
+      position: fixed;
+      left: 12px;
+      top: -50px;
+      z-index: 500;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      color: var(--parch-bright);
+      border: 1px solid var(--border-gold-2);
+      background: var(--bg-panel);
+      padding: 8px 12px;
+      text-decoration: none;
+      transition: top 0.2s ease;
+    }
+    .skip-link:focus { top: 12px; }
+
+    #bg-3d, #bg-grid, #bg-glow, #bg-scan {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+    #bg-3d { z-index: 1; }
+    #bg-grid {
+      z-index: 2;
+      background-image:
+        linear-gradient(rgba(10, 21, 53, 0.42) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(10, 21, 53, 0.42) 1px, transparent 1px);
+      background-size: 64px 64px;
+      animation: gridShift 32s linear infinite;
+    }
+    @keyframes gridShift { from { background-position: 0 0; } to { background-position: 64px 64px; } }
+    #bg-glow {
+      z-index: 3;
+      background:
+        radial-gradient(circle at 18% 70%, rgba(139, 26, 26, 0.22), transparent 38%),
+        radial-gradient(circle at 78% 14%, rgba(201, 168, 76, 0.14), transparent 34%),
+        radial-gradient(circle at 88% 22%, rgba(0, 196, 255, 0.07), transparent 26%),
+        radial-gradient(circle at 50% 108%, rgba(10, 40, 90, 0.35), transparent 45%),
+        radial-gradient(ellipse at center, rgba(10, 21, 53, 0.55) 0%, rgba(5, 6, 14, 0.9) 60%, var(--bg-void) 100%);
+    }
+    #bg-scan {
+      z-index: 4;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px);
+    }
+
+    #loader {
+      position: fixed;
+      inset: 0;
+      z-index: 600;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 16px;
+      background: radial-gradient(circle at center, rgba(10, 21, 53, 0.92), rgba(5, 6, 14, 0.98));
+      transition: opacity 0.6s ease;
+    }
+    #loader.hidden { opacity: 0; pointer-events: none; }
+    #loader-sigil {
+      width: 170px; height: 170px;
+      border: 1px solid var(--border-gold);
+      border-radius: 50%;
+      position: relative;
+      animation: spin 16s linear infinite;
+    }
+    #loader-sigil::before, #loader-sigil::after {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border: 1px dashed var(--gold-mid);
+      border-radius: 50%;
+    }
+    #loader-sigil::after {
+      inset: 30px;
+      animation: spinRev 8s linear infinite;
+      border-style: solid;
+      opacity: 0.55;
+    }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes spinRev { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+    #loader-text { font-family: var(--font-heading); color: var(--gold-light); letter-spacing: 0.24em; font-size: 11px; }
+    #loader-bar-wrap { width: min(340px, 60vw); height: 1px; background: var(--border-dim); }
+    #loader-bar { width: 0; height: 1px; background: linear-gradient(90deg, var(--crimson), var(--gold-mid), var(--gold-light)); }
+
+    #cursor-core, #cursor-orbit {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1000;
+      transform: translate(-50%, -50%);
+    }
+    #cursor-core {
+      width: 10px; height: 10px;
+      background: var(--gold-mid);
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+    #cursor-orbit {
+      width: 32px; height: 32px;
+      border: 1px solid var(--gold-mid);
+      border-radius: 50%;
+      opacity: 0.6;
+      transition: width 0.2s, height 0.2s, opacity 0.2s;
+    }
+    body.cursor-hover #cursor-core { transform: translate(-50%, -50%) rotate(45deg) scale(0.4); background: var(--gold-light); }
+    body.cursor-hover #cursor-orbit { width: 46px; height: 46px; opacity: 1; }
+
+    #frame {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    #ui-root {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      grid-template-columns: 330px 1fr 92px;
+      gap: 14px;
+      padding: 18px;
+    }
+
+    #command-rail {
+      border: 1px solid var(--border-gold);
+      background:
+        linear-gradient(180deg, rgba(139, 26, 26, 0.14) 0%, transparent 42%),
+        linear-gradient(165deg, rgba(8, 6, 14, 0.98), rgba(5, 9, 24, 0.98));
+      position: relative;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto auto;
+      padding: 10px;
+      overflow: hidden;
+    }
+    #command-rail::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border: 1px solid var(--border-dim);
+      pointer-events: none;
+    }
+    #command-rail::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      background: linear-gradient(180deg, var(--crimson-light), var(--crimson) 35%, rgba(139, 26, 26, 0.35) 100%);
+      box-shadow: 4px 0 24px rgba(196, 43, 43, 0.2);
+      pointer-events: none;
+    }
+    #menu-title {
+      font-family: var(--font-heading);
+      color: var(--gold-light);
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      margin: 8px 12px;
+    }
+    #menu-sub {
+      font-family: var(--font-mono);
+      color: var(--parch-dim);
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      margin: 0 12px 8px;
+    }
+    #menu-list { list-style: none; margin-top: 10px; }
+    .menu-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 32px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 13px 14px;
+      border: 1px solid transparent;
+      border-left: 2px solid transparent;
+      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .menu-item::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(201, 168, 76, 0.22), transparent 68%);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .menu-item:hover, .menu-item.active {
+      border-color: var(--border-gold);
+      border-left-color: var(--gold-mid);
+      transform: translateX(4px);
+    }
+    .menu-item:hover::before, .menu-item.active::before { opacity: 1; }
+    .menu-index { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.14em; color: var(--gold-deep); }
+    .menu-label { font-family: var(--font-heading); font-size: 11px; letter-spacing: 0.24em; color: var(--parch-bright); }
+    .menu-arcana { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.12em; color: rgba(201, 168, 76, 0.58); }
+
+    #menu-telemetry {
+      border: 1px solid var(--border-gold);
+      background: rgba(8, 6, 14, 0.7);
+      margin: 10px 8px;
+      padding: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    #menu-telemetry::before {
+      content: "";
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: var(--gold-mid);
+      transform: translateX(-2px);
+      transition: transform 0.2s;
+    }
+    #menu-telemetry.preview::before { transform: translateX(0); }
+    .tele-title { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.22em; color: var(--gold-mid); margin-bottom: 7px; }
+    .tele-row { display: flex; justify-content: space-between; margin: 5px 0; font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.12em; color: var(--parch-dim); }
+
+    #rail-footer {
+      margin: 0 12px 6px;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.18em;
+      color: var(--parch-dim);
+      border-top: 1px solid var(--border-dim);
+      padding-top: 8px;
+    }
+
+    #content-stage {
+      position: relative;
+      border: 1px solid var(--border-gold);
+      background:
+        radial-gradient(ellipse 120% 80% at 100% 0%, rgba(139, 26, 26, 0.06), transparent 50%),
+        radial-gradient(ellipse 90% 70% at 0% 100%, rgba(0, 196, 255, 0.04), transparent 45%),
+        linear-gradient(145deg, rgba(8, 6, 14, 0.92), rgba(12, 10, 24, 0.84));
+      overflow: hidden;
+    }
+    #content-stage::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border: 1px solid var(--border-dim);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .stage-section {
+      position: absolute;
+      inset: 0;
+      display: none;
+      opacity: 0;
+      pointer-events: none;
+      padding: 28px 34px;
+      overflow-y: auto;
+    }
+    .stage-section.active {
+      display: block;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .sec-tag { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.42em; color: var(--gold-mid); margin-bottom: 8px; text-transform: uppercase; }
+    .sec-title { font-family: var(--font-heading); font-size: clamp(24px, 3vw, 40px); letter-spacing: 0.08em; color: var(--parch-bright); text-transform: uppercase; margin-bottom: 10px; }
+    .sec-rule { width: 76px; height: 1px; background: linear-gradient(90deg, var(--gold-mid), transparent); margin-bottom: 22px; }
+    .t-body {
+      font-size: clamp(15px, 1.05vw, 17px);
+      line-height: 1.75;
+      color: var(--parch-mid);
+      max-width: 52rem;
+    }
+
+    .origin-wrap {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+    #origin-sigil {
+      width: clamp(150px, 22vw, 220px);
+      aspect-ratio: 1;
+      border: 1px solid var(--border-gold);
+      border-radius: 50%;
+      position: relative;
+      margin-bottom: 18px;
+      animation: sigilFloat 6s ease-in-out infinite;
+    }
+    #origin-sigil::before, #origin-sigil::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      border: 1px dashed var(--gold-mid);
+      inset: 18px;
+    }
+    #origin-sigil::after { inset: 42px; border-style: solid; opacity: 0.5; animation: spin 12s linear infinite; }
+    @keyframes sigilFloat { 0%, 100% { transform: translateY(0);} 50% { transform: translateY(-9px);} }
+    #origin-name {
+      font-family: var(--font-display);
+      font-size: clamp(38px, 6vw, 70px);
+      letter-spacing: 0.1em;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      text-shadow: 0 0 26px var(--gold-glow);
+      position: relative;
+    }
+    #origin-name.shimmer {
+      background-image: linear-gradient(
+        102deg,
+        var(--gold-deep) 0%,
+        var(--gold-mid) 24%,
+        var(--gold-pale) 48%,
+        var(--gold-light) 52%,
+        var(--gold-mid) 76%,
+        var(--gold-deep) 100%
+      );
+      background-size: 240% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: none;
+      filter: drop-shadow(0 0 22px rgba(201, 168, 76, 0.4)) drop-shadow(0 0 40px rgba(139, 26, 26, 0.15));
+      animation: goldShimmer 6s ease-in-out infinite;
+    }
+    @keyframes goldShimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    #origin-name::before, #origin-name::after {
+      content: attr(data-text);
+      position: absolute; inset: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+    #origin-name::before { color: var(--teal); transform: translateX(-2px); }
+    #origin-name::after { color: var(--crimson-light); transform: translateX(2px); }
+    #origin-name.glitching::before, #origin-name.glitching::after { opacity: 0.6; animation: glitch 420ms linear; }
+    @keyframes glitch {
+      0% { clip-path: inset(0 0 95% 0); transform: translateX(-4px); }
+      14% { clip-path: inset(32% 0 48% 0); transform: translateX(4px); }
+      28% { clip-path: inset(80% 0 4% 0); transform: translateX(-2px); }
+      40%,100% { clip-path: inset(0 0 0 0); transform: translateX(0); }
+    }
+    #origin-role { font-style: italic; font-size: 16px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--parch-dim); }
+    #origin-enter {
+      margin-top: 16px;
+      border: 1px solid var(--border-gold);
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.1), transparent);
+      color: var(--gold-mid);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      padding: 12px 22px;
+      cursor: pointer;
+    }
+
+    .chron-grid { display: grid; grid-template-columns: 240px 1fr; gap: 30px; }
+    .dossier-card {
+      border: 1px solid var(--border-gold);
+      background: linear-gradient(170deg, var(--bg-panel-2), var(--bg-panel));
+      position: relative;
+      box-shadow: inset 0 0 0 1px var(--border-dim);
+    }
+    .dossier-card::before { content: ""; position: absolute; inset: 8px; border: 1px solid var(--border-dim); pointer-events: none; }
+    .dossier-top { height: 28px; display: grid; place-items: center; font-family: var(--font-heading); font-size: 8px; letter-spacing: 0.24em; color: var(--gold-mid); background: rgba(201,168,76,0.1); }
+    .dossier-portrait { height: 220px; display: grid; place-items: center; background: linear-gradient(150deg, var(--bg-midnight), var(--bg-deep)); font-family: var(--font-display); font-size: 48px; color: var(--gold-mid); }
+    .dossier-ident { padding: 10px 12px; }
+    .dossier-ident h3 { font-family: var(--font-heading); font-size: 11px; letter-spacing: 0.14em; color: var(--parch-bright); }
+    .dossier-ident p { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.16em; color: var(--gold-mid); }
+    .stat-list { padding: 0 12px 12px; display: grid; gap: 8px; }
+    .stat-row { display: grid; grid-template-columns: 46px 1fr; gap: 8px; align-items: center; }
+    .stat-label { font-family: var(--font-mono); font-size: 7px; letter-spacing: 0.1em; color: var(--gold-deep); }
+    .stat-track { height: 3px; background: var(--border-dim); }
+    .stat-fill { width: 0; height: 100%; background: linear-gradient(90deg, var(--gold-deep), var(--gold-mid), var(--gold-light)); }
+    .chip-row { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip { border: 1px solid var(--border-gold); padding: 6px 12px; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.2em; color: var(--gold-mid); }
+
+    .arcana-layout { display: grid; grid-template-columns: minmax(300px, 360px) 1fr; gap: 20px; perspective: 1100px; }
+    .arcana-mandala {
+      border: 1px solid var(--border-gold);
+      background: linear-gradient(165deg, var(--bg-panel), var(--bg-panel-2));
+      position: relative;
+      padding: 16px;
+      box-shadow: inset 0 0 0 1px var(--border-dim);
+    }
+    .arcana-mandala::before { content: ""; position: absolute; inset: 8px; border: 1px solid var(--border-dim); pointer-events: none; }
+    .mandala-sigil { aspect-ratio: 1; display: grid; place-items: center; }
+    .mandala-sigil svg { width: 100%; max-width: 300px; stroke: var(--gold-mid); fill: none; stroke-width: 0.8; }
+    .mandala-ring-a { transform-origin: 50% 50%; animation: spin 22s linear infinite; }
+    .mandala-ring-b { transform-origin: 50% 50%; animation: spinRev 16s linear infinite; }
+    .arcana-focus-name { font-family: var(--font-heading); font-size: 15px; letter-spacing: 0.2em; color: var(--parch-bright); text-transform: uppercase; margin-top: 8px; }
+    .arcana-focus-rank { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.2em; color: var(--gold-mid); margin: 6px 0 10px; }
+    .arcana-focus-desc { font-size: 13px; line-height: 1.7; }
+    .arcana-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+    .arcana-card {
+      border: 1px solid var(--border-gold);
+      background: linear-gradient(165deg, var(--bg-panel), var(--bg-panel-2));
+      position: relative;
+      padding: 18px 14px 14px;
+      box-shadow: inset 0 0 0 1px var(--border-dim);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .arcana-card::after {
+      content: attr(data-rank);
+      position: absolute;
+      right: 10px;
+      top: -8px;
+      background: var(--bg-void);
+      padding: 0 6px;
+      border: 1px solid var(--border-gold);
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.16em;
+      color: var(--gold-mid);
+    }
+    .arcana-card:hover, .arcana-card.active-focus { transform: translateY(-5px); border-color: var(--border-gold-2); box-shadow: inset 0 0 0 1px var(--gold-mid), 0 8px 20px rgba(5,6,14,0.55); }
+    .arcana-icon { width: 24px; height: 24px; stroke: var(--gold-mid); fill: none; stroke-width: 1.5; margin-bottom: 10px; }
+    .arcana-name { font-family: var(--font-heading); font-size: 11px; letter-spacing: 0.18em; color: var(--parch-bright); }
+    .arcana-level { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.18em; color: var(--gold-mid); opacity: 0.6; margin: 4px 0 8px; }
+    .dot-row { display: flex; gap: 7px; }
+    .dot { width: 6px; height: 6px; transform: rotate(45deg); border: 1px solid var(--border-gold); }
+    .dot.filled { background: var(--gold-mid); border-color: var(--gold-mid); }
+
+    .relic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+    .relic {
+      aspect-ratio: 3/4;
+      border: 1px solid var(--border-gold);
+      background: linear-gradient(165deg, var(--bg-panel), var(--bg-panel-2));
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px var(--border-dim);
+      will-change: transform;
+    }
+    .relic-num { position: absolute; right: 12px; top: 8px; font-family: var(--font-heading); font-size: 10px; color: var(--gold-mid); letter-spacing: 0.16em; }
+    .relic-art { height: 52%; border-bottom: 1px solid var(--border-dim); display: grid; place-items: center; }
+    .relic-icon { width: 40px; height: 40px; stroke: var(--gold-mid); fill: none; stroke-width: 1.4; }
+    .relic-title { margin-top: 12px; font-family: var(--font-heading); color: var(--parch-bright); letter-spacing: 0.14em; font-size: 12px; }
+    .relic-type { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.16em; color: var(--parch-dim); margin-top: 4px; }
+    .relic-overlay {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.22,1,0.36,1);
+      border-top: 1px solid var(--border-gold);
+      background: linear-gradient(180deg, rgba(8,6,14,0.86), rgba(8,6,14,0.98));
+      padding: 12px;
+    }
+    .relic:hover .relic-overlay, .relic:focus-within .relic-overlay { transform: translateY(0); }
+    .relic-desc { font-size: 12px; line-height: 1.6; margin-bottom: 10px; }
+    .relic-tags { display: flex; gap: 6px; margin-bottom: 10px; }
+    .relic-tag { border: 1px solid var(--border-gold); padding: 2px 6px; font-family: var(--font-mono); font-size: 8px; color: var(--gold-mid); }
+    .relic-link { color: var(--gold-mid); text-decoration: none; border: 1px solid var(--border-gold); font-family: var(--font-heading); font-size: 9px; letter-spacing: 0.14em; padding: 5px 8px; display: inline-block; }
+
+    .trans-grid { display: grid; grid-template-columns: minmax(300px, 500px) 1fr; gap: 28px; }
+    .trans-panel {
+      border: 1px solid var(--border-gold);
+      background: linear-gradient(145deg, rgba(12,8,4,0.95), rgba(8,6,14,0.95));
+      position: relative;
+      padding: 34px 30px;
+      box-shadow: inset 0 0 0 1px var(--border-dim);
+    }
+    .trans-panel::before {
+      content: "✦ OPEN CHANNEL ✦";
+      position: absolute;
+      top: -9px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-void);
+      padding: 0 12px;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.3em;
+      color: var(--gold-mid);
+      opacity: 0.7;
+    }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.3em; color: var(--gold-mid); opacity: 0.66; margin-bottom: 8px; }
+    .field input, .field textarea {
+      width: 100%;
+      background: rgba(201,168,76,0.03);
+      border: none;
+      border-bottom: 1px solid var(--border-gold);
+      color: var(--parch-bright);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 10px 0;
+      outline: none;
+    }
+    .field textarea { height: 110px; resize: none; }
+    .submit {
+      margin-top: 20px;
+      border: 1px solid var(--gold-mid);
+      background: transparent;
+      color: var(--gold-mid);
+      font-family: var(--font-heading);
+      font-size: 11px;
+      letter-spacing: 0.24em;
+      padding: 12px 24px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .submit::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: var(--gold-mid);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
+      z-index: 0;
+    }
+    .submit:hover::before { transform: scaleX(1); }
+    .submit span { position: relative; z-index: 1; }
+    .submit:hover { color: var(--bg-void); }
+    .channel-list { margin-top: 14px; display: grid; gap: 10px; }
+    .channel { color: var(--gold-mid); text-decoration: none; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; transition: transform 0.2s, color 0.2s; display: inline-block; }
+    .channel:hover { transform: translateX(4px); color: var(--parch-bright); }
+    .quote { margin-top: 20px; border-left: 2px solid var(--gold-mid); padding-left: 14px; font-style: italic; font-size: 12px; color: var(--parch-dim); }
+
+    #status-column {
+      border: 1px solid var(--border-gold);
+      background: linear-gradient(170deg, rgba(8,6,14,0.95), rgba(12,10,24,0.88));
+      position: relative;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      padding: 10px;
+    }
+    #status-column::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border: 1px solid var(--border-dim);
+      pointer-events: none;
+    }
+    #dot-nav {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    .dot-nav {
+      width: 10px; height: 10px;
+      transform: rotate(45deg);
+      border: 1px solid var(--border-gold);
+      background: transparent;
+      cursor: pointer;
+    }
+    .dot-nav.active { background: var(--gold-mid); border-color: var(--gold-mid); }
+    #status-readout {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.14em;
+      color: var(--parch-dim);
+      display: grid;
+      gap: 6px;
+      margin: 0 4px;
+    }
+    #sector-readout { color: var(--gold-mid); letter-spacing: 0.18em; }
+
+    #transition-curtain, #transition-plate, #transition-sigil {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+    #transition-curtain { z-index: 350; transform: translateX(-100%); background: linear-gradient(90deg, rgba(5,6,14,0.98), rgba(8,6,14,0.96)); border-right: 2px solid var(--gold-mid); }
+    #transition-plate { z-index: 351; transform: translateX(100%); background: linear-gradient(90deg, rgba(8,6,14,0.95), rgba(12,10,24,0.95)); border-left: 1px solid var(--border-gold); }
+    #transition-sigil {
+      z-index: 352;
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      background: radial-gradient(circle at center, rgba(201,168,76,0.12), transparent 30%);
+    }
+    #transition-sigil svg { width: 120px; height: 120px; stroke: var(--gold-mid); fill: none; stroke-width: 0.8; }
+
+    #menu-toggle, #audio-toggle {
+      position: fixed;
+      top: 20px;
+      z-index: 420;
+      border: 1px solid var(--border-gold);
+      background: var(--bg-panel);
+      color: var(--gold-mid);
+      cursor: pointer;
+    }
+    #menu-toggle {
+      left: 20px;
+      width: 42px; height: 42px;
+      display: grid; place-content: center; gap: 6px;
+    }
+    #menu-toggle span { width: 26px; height: 1px; background: var(--gold-mid); transition: transform 0.3s, opacity 0.3s; }
+    #menu-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    #menu-toggle.open span:nth-child(2) { opacity: 0; }
+    #menu-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    #audio-toggle { right: 20px; padding: 10px 12px; font-family: var(--font-heading); font-size: 11px; letter-spacing: 0.12em; }
+    #audio-toggle.enabled { color: var(--parch-bright); border-color: var(--border-gold-2); box-shadow: 0 0 14px var(--gold-glow); }
+
+    #menu-mobile-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      background: rgba(0,0,0,0.55);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    @media (max-width: 1080px) {
+      #ui-root { grid-template-columns: 300px 1fr 80px; }
+    }
+    @media (max-width: 900px) {
+      body { cursor: auto; }
+      #cursor-core, #cursor-orbit { display: none; }
+      #ui-root { grid-template-columns: 1fr; gap: 10px; padding: 12px; }
+      #command-rail {
+        position: fixed;
+        left: 0; top: 0; bottom: 0;
+        width: min(330px, 90vw);
+        z-index: 120;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      body.menu-open #command-rail { transform: translateX(0); }
+      body.menu-open #menu-mobile-backdrop { opacity: 1; pointer-events: auto; }
+      #content-stage { min-height: calc(100vh - 24px); }
+      #status-column { display: none; }
+      .chron-grid, .arcana-layout, .trans-grid { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+      #bg-grid { animation: none; }
+      #origin-name.shimmer { animation: none; }
+    }
+  </style>
+</head>
+<body class="loading">
+  <a href="#section-chronicle" class="skip-link">Skip to codex</a>
+  <div id="menu-mobile-backdrop" aria-hidden="true"></div>
+  <div id="cursor-core" aria-hidden="true"></div>
+  <div id="cursor-orbit" aria-hidden="true"></div>
+
+  <div id="loader" role="status" aria-live="polite">
+    <div id="loader-sigil"></div>
+    <div id="loader-text">INITIALIZING ARCHETYPE</div>
+    <div id="loader-bar-wrap"><div id="loader-bar"></div></div>
+  </div>
+
+  <canvas id="bg-3d" aria-hidden="true"></canvas>
+  <div id="bg-grid" aria-hidden="true"></div>
+  <div id="bg-glow" aria-hidden="true"></div>
+  <div id="bg-scan" aria-hidden="true"></div>
+
+  <svg id="frame" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <g stroke="rgba(201,168,76,0.38)" stroke-width="0.14">
+      <line x1="8" y1="2" x2="92" y2="2"></line>
+      <line x1="8" y1="98" x2="92" y2="98"></line>
+      <line x1="2" y1="8" x2="2" y2="92"></line>
+      <line x1="98" y1="8" x2="98" y2="92"></line>
+    </g>
+    <g stroke="var(--gold-mid)" stroke-width="0.22">
+      <path d="M2 12V2H12"></path><path d="M4 12V4H12"></path>
+      <path d="M98 12V2H88"></path><path d="M96 12V4H88"></path>
+      <path d="M2 88V98H12"></path><path d="M4 88V96H12"></path>
+      <path d="M98 88V98H88"></path><path d="M96 88V96H88"></path>
+    </g>
+    <g fill="none" stroke="rgba(201,168,76,0.45)" stroke-width="0.12">
+      <path d="M6 6 L10 6 M6 6 L6 10"></path>
+      <path d="M94 6 L90 6 M94 6 L94 10"></path>
+      <path d="M6 94 L10 94 M6 94 L6 90"></path>
+      <path d="M94 94 L90 94 M94 94 L94 90"></path>
+    </g>
+    <g fill="rgba(201,168,76,0.12)" stroke="var(--gold-mid)" stroke-width="0.1">
+      <polygon points="50,3.2 51.4,5.6 48.6,5.6"></polygon>
+      <polygon points="50,96.8 51.4,94.4 48.6,94.4"></polygon>
+      <polygon points="3.2,50 5.6,48.6 5.6,51.4"></polygon>
+      <polygon points="96.8,50 94.4,48.6 94.4,51.4"></polygon>
+    </g>
+  </svg>
+
+  <div id="transition-curtain" aria-hidden="true"></div>
+  <div id="transition-plate" aria-hidden="true"></div>
+  <div id="transition-sigil" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" stroke-dasharray="4 4"></circle><circle cx="50" cy="50" r="24"></circle><rect x="42" y="42" width="16" height="16" transform="rotate(45 50 50)"></rect></svg></div>
+
+  <button id="menu-toggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <button id="audio-toggle" aria-label="Toggle audio">♪</button>
+
+  <div id="ui-root">
+    <aside id="command-rail" role="navigation" aria-label="Codex menu">
+      <div id="menu-title">ROYAL CODEX MENU</div>
+      <div id="menu-sub">ARCHETYPE COMMAND SURFACE</div>
+      <ul id="menu-list">
+        <li class="menu-item active" data-target="origin" role="menuitem" tabindex="0" aria-current="page"><span class="menu-index">00</span><span class="menu-label">ORIGIN</span><span class="menu-arcana">THE FOOL</span></li>
+        <li class="menu-item" data-target="chronicle" role="menuitem" tabindex="-1"><span class="menu-index">01</span><span class="menu-label">CHRONICLE</span><span class="menu-arcana">THE MAGICIAN</span></li>
+        <li class="menu-item" data-target="arcana" role="menuitem" tabindex="-1"><span class="menu-index">02</span><span class="menu-label">ARCANA</span><span class="menu-arcana">JUSTICE</span></li>
+        <li class="menu-item" data-target="compendium" role="menuitem" tabindex="-1"><span class="menu-index">03</span><span class="menu-label">COMPENDIUM</span><span class="menu-arcana">THE TOWER</span></li>
+        <li class="menu-item" data-target="transmit" role="menuitem" tabindex="-1"><span class="menu-index">04</span><span class="menu-label">TRANSMIT</span><span class="menu-arcana">THE WORLD</span></li>
+      </ul>
+      <div id="menu-telemetry">
+        <div class="tele-title">COMMAND AUGURY</div>
+        <div class="tele-row"><span>SECTOR</span><span id="tele-sector">ORIGIN</span></div>
+        <div class="tele-row"><span>ARCANA</span><span id="tele-arcana">THE FOOL</span></div>
+        <div class="tele-row"><span>STATE</span><span id="tele-state">READY</span></div>
+      </div>
+      <div id="rail-footer">GRIMOIRE CHANNEL OPEN</div>
+    </aside>
+
+    <main id="content-stage">
+      <section class="stage-section active" id="section-origin" role="region" aria-label="Origin">
+        <div class="origin-wrap">
+          <div id="origin-sigil" data-animate></div>
+          <h1 id="origin-name" class="shimmer" data-text="CAEL FINDLEY" data-animate>CAEL FINDLEY</h1>
+          <p id="origin-role" data-animate>Computer Science Architect</p>
+          <button id="origin-enter" data-animate>▼ OPEN THE CHRONICLE ▼</button>
+        </div>
+      </section>
+
+      <section class="stage-section" id="section-chronicle" role="region" aria-label="Chronicle">
+        <p class="sec-tag" data-animate>⬡ Chronicle · I · The Magician</p>
+        <h2 class="sec-title" data-animate>Chronicle of the Figure</h2>
+        <div class="sec-rule" data-animate></div>
+        <div class="chron-grid">
+          <article class="dossier-card card" data-animate>
+            <div class="dossier-top">⬡ FIGURE · CS ⬡</div>
+            <div class="dossier-portrait">CF</div>
+            <div class="dossier-ident"><h3>CAEL FINDLEY</h3><p>COMPUTER SCIENCE ARCHITECT</p></div>
+            <div class="stat-list">
+              <div class="stat-row"><span class="stat-label">LOGIC</span><div class="stat-track"><div class="stat-fill" data-level="88"></div></div></div>
+              <div class="stat-row"><span class="stat-label">BUILD</span><div class="stat-track"><div class="stat-fill" data-level="78"></div></div></div>
+              <div class="stat-row"><span class="stat-label">DESIGN</span><div class="stat-track"><div class="stat-fill" data-level="66"></div></div></div>
+              <div class="stat-row"><span class="stat-label">SYSTEMS</span><div class="stat-track"><div class="stat-fill" data-level="82"></div></div></div>
+              <div class="stat-row"><span class="stat-label">ALGO</span><div class="stat-track"><div class="stat-fill" data-level="100"></div></div></div>
+            </div>
+          </article>
+          <div class="t-body" data-animate>
+            A <span style="color:var(--gold-mid)">computer scientist</span> and digital craftsman guided by a single law:
+            systems should remain elegant while enduring pressure.
+            <br><br>
+            The domain spans <span style="color:var(--gold-mid)">full stack</span> doctrine, from resilient backend architecture
+            to interface language that feels inevitable under motion.
+            <br><br>
+            Every function is a verdict. Every architecture line is a declaration.
+            <br><br>
+            At the crossing of efficient and beautiful, the grimoire seeks durable clarity.
+            <div class="chip-row">
+              <span class="chip">⬡ OPEN TO SUMMONS</span>
+              <span class="chip">⬡ TEXAS, USA</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stage-section" id="section-arcana" role="region" aria-label="Arcana">
+        <p class="sec-tag" data-animate>⬡ Arcana · II · Justice</p>
+        <h2 class="sec-title" data-animate>Arcana Compendium</h2>
+        <div class="sec-rule" data-animate></div>
+        <div class="arcana-layout">
+          <aside class="arcana-mandala card" data-animate>
+            <div class="mandala-sigil">
+              <svg viewBox="0 0 300 300">
+                <g class="mandala-ring-a"><circle cx="150" cy="150" r="126" stroke-dasharray="6 6"></circle><circle cx="150" cy="150" r="106"></circle></g>
+                <g class="mandala-ring-b"><circle cx="150" cy="150" r="84" stroke-dasharray="4 8"></circle><polygon points="150,68 219,110 219,190 150,232 81,190 81,110"></polygon></g>
+                <rect x="132" y="132" width="36" height="36" transform="rotate(45 150 150)"></rect>
+              </svg>
+            </div>
+            <h3 id="arcana-focus-name" class="arcana-focus-name">FULL STACK</h3>
+            <p id="arcana-focus-rank" class="arcana-focus-rank">RANK V · GRAND MASTER</p>
+            <p id="arcana-focus-desc" class="arcana-focus-desc">Architect-grade command across interface, service, and systems layers. Maintains continuity from ritual blueprint to production reality.</p>
+          </aside>
+          <div class="arcana-grid">
+            <article class="arcana-card card active-focus" data-rank="V" data-focus-name="FULL STACK" data-focus-rank="RANK V · GRAND MASTER" data-focus-desc="Architect-grade command across interface, service, and systems layers. Maintains continuity from ritual blueprint to production reality." data-animate><svg class="arcana-icon" viewBox="0 0 24 24"><path d="M3 5h7l-3 7 3 7H3"></path><path d="M21 5h-7l3 7-3 7h7"></path></svg><h3 class="arcana-name">FULL STACK</h3><p class="arcana-level">GRAND MASTER</p><div class="dot-row"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span></div></article>
+            <article class="arcana-card card" data-rank="IV" data-focus-name="SYSTEMS DESIGN" data-focus-rank="RANK IV · ADEPT" data-focus-desc="Designs distributed doctrine where services remain legible, resilient, and recoverable under hostile demand." data-animate><svg class="arcana-icon" viewBox="0 0 24 24"><polygon points="12,2 20,7 20,17 12,22 4,17 4,7"></polygon></svg><h3 class="arcana-name">SYSTEMS DESIGN</h3><p class="arcana-level">ADEPT</p><div class="dot-row"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></div></article>
+            <article class="arcana-card card" data-rank="V" data-focus-name="ALGORITHMS" data-focus-rank="RANK V · GRAND MASTER" data-focus-desc="Forges algorithmic paths where complexity remains bounded and execution remains swift." data-animate><svg class="arcana-icon" viewBox="0 0 24 24"><polygon points="12,4 20,20 4,20"></polygon></svg><h3 class="arcana-name">ALGORITHMS</h3><p class="arcana-level">GRAND MASTER</p><div class="dot-row"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span></div></article>
+            <article class="arcana-card card" data-rank="III" data-focus-name="DATABASES" data-focus-rank="RANK III · JOURNEYMAN" data-focus-desc="Builds data vaults with coherent indexing and transaction clarity across campaigns." data-animate><svg class="arcana-icon" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"></ellipse><path d="M5 6v10c0 1.6 3.2 3 7 3s7-1.4 7-3V6"></path></svg><h3 class="arcana-name">DATABASES</h3><p class="arcana-level">JOURNEYMAN</p><div class="dot-row"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span><span class="dot"></span></div></article>
+            <article class="arcana-card card" data-rank="III" data-focus-name="CLOUD / DEVOPS" data-focus-rank="RANK III · JOURNEYMAN" data-focus-desc="Maintains deployment rites and observability wards so systems evolve without collapse." data-animate><svg class="arcana-icon" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 0-8 5 5 0 0 0-9.6-1.5A3.5 3.5 0 0 0 7 18z"></path></svg><h3 class="arcana-name">CLOUD / DEVOPS</h3><p class="arcana-level">JOURNEYMAN</p><div class="dot-row"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span><span class="dot"></span></div></article>
+            <article class="arcana-card card" data-rank="IV" data-focus-name="AI / ML" data-focus-rank="RANK IV · ADEPT" data-focus-desc="Constructs practical learning pipelines where models remain measurable and deployable." data-animate><svg class="arcana-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="2"></circle></svg><h3 class="arcana-name">AI / ML</h3><p class="arcana-level">ADEPT</p><div class="dot-row"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></div></article>
+            <article class="arcana-card card" data-rank="IV" data-focus-name="UI / UX" data-focus-rank="RANK IV · ADEPT" data-focus-desc="Shapes interfaces with clear hierarchy so interaction remains fast and emotionally coherent." data-animate><svg class="arcana-icon" viewBox="0 0 24 24"><path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6-10-6-10-6z"></path><circle cx="12" cy="12" r="2.5"></circle></svg><h3 class="arcana-name">UI / UX</h3><p class="arcana-level">ADEPT</p><div class="dot-row"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span></div></article>
+            <article class="arcana-card card" data-rank="III" data-focus-name="CYBERSECURITY" data-focus-rank="RANK III · JOURNEYMAN" data-focus-desc="Applies practical defensive doctrine to reduce breach surface and preserve trust." data-animate><svg class="arcana-icon" viewBox="0 0 24 24"><rect x="6" y="11" width="12" height="9" rx="1"></rect><path d="M8 11V8a4 4 0 1 1 8 0v3"></path></svg><h3 class="arcana-name">CYBERSECURITY</h3><p class="arcana-level">JOURNEYMAN</p><div class="dot-row"><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot"></span><span class="dot"></span></div></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="stage-section" id="section-compendium" role="region" aria-label="Compendium">
+        <p class="sec-tag" data-animate>⬡ Compendium · III · The Tower</p>
+        <h2 class="sec-title" data-animate>Compendium Vault</h2>
+        <div class="sec-rule" data-animate></div>
+        <div class="relic-grid">
+          <article class="relic card" tabindex="0" data-animate><div class="relic-num">I</div><div class="relic-art"><svg class="relic-icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16"></rect><path d="M4 9h16M9 4v16"></path></svg></div><h3 class="relic-title">PROJECT ALPHA</h3><p class="relic-type">WEB CAMPAIGN</p><div class="relic-overlay"><p class="relic-desc">Full-stack relic with identity wards, resilient data orchestration, and responsive command surfaces.</p><div class="relic-tags"><span class="relic-tag">HTML</span><span class="relic-tag">CSS</span><span class="relic-tag">JS</span></div><a href="#" class="relic-link">VIEW RELIC →</a></div></article>
+          <article class="relic card" tabindex="0" data-animate><div class="relic-num">II</div><div class="relic-art"><svg class="relic-icon" viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"></path><path d="M12 2v20M3 7l18 10"></path></svg></div><h3 class="relic-title">PROJECT BETA</h3><p class="relic-type">SYSTEM DOCTRINE</p><div class="relic-overlay"><p class="relic-desc">Distributed doctrine with strategic load balancing and layered fault tolerance.</p><div class="relic-tags"><span class="relic-tag">HTML</span><span class="relic-tag">CSS</span><span class="relic-tag">JS</span></div><a href="#" class="relic-link">VIEW RELIC →</a></div></article>
+          <article class="relic card" tabindex="0" data-animate><div class="relic-num">III</div><div class="relic-art"><svg class="relic-icon" viewBox="0 0 24 24"><path d="M4 20V4h16v16"></path><path d="M7 15l3-3 3 2 4-5"></path></svg></div><h3 class="relic-title">PROJECT GAMMA</h3><p class="relic-type">ML RITUAL</p><div class="relic-overlay"><p class="relic-desc">End-to-end machine learning rite from ingestion to deployment with integrity gates.</p><div class="relic-tags"><span class="relic-tag">HTML</span><span class="relic-tag">CSS</span><span class="relic-tag">JS</span></div><a href="#" class="relic-link">VIEW RELIC →</a></div></article>
+          <article class="relic card" tabindex="0" data-animate><div class="relic-num">IV</div><div class="relic-art"><svg class="relic-icon" viewBox="0 0 24 24"><path d="M5 18h14M7 14h10M9 10h6M11 6h2"></path></svg></div><h3 class="relic-title">PROJECT DELTA</h3><p class="relic-type">ALGORITHM ARSENAL</p><div class="relic-overlay"><p class="relic-desc">Optimized data structures and routines tuned for correctness, speed, and durable complexity boundaries.</p><div class="relic-tags"><span class="relic-tag">HTML</span><span class="relic-tag">CSS</span><span class="relic-tag">JS</span></div><a href="#" class="relic-link">VIEW RELIC →</a></div></article>
+        </div>
+      </section>
+
+      <section class="stage-section" id="section-transmit" role="region" aria-label="Transmit">
+        <p class="sec-tag" data-animate>⬡ Transmit · IV · The World</p>
+        <h2 class="sec-title" data-animate>Transmit to the Architect</h2>
+        <div class="sec-rule" data-animate></div>
+        <div class="trans-grid">
+          <form class="trans-panel" data-animate>
+            <div class="field"><label for="name">◈ NAME DESIGNATION</label><input id="name" type="text" placeholder="Enter designation" required></div>
+            <div class="field"><label for="email">◈ SIGNAL FREQUENCY</label><input id="email" type="email" placeholder="signal@domain.com" required></div>
+            <div class="field"><label for="message">◈ TRANSMISSION CONTENT</label><textarea id="message" placeholder="Transmit your doctrine..." required></textarea></div>
+            <button type="submit" class="submit"><span>SEAL THE SIGNAL</span></button>
+          </form>
+          <aside data-animate>
+            <h3 class="sec-title" style="font-size:22px;">Royal Channels</h3>
+            <div class="channel-list">
+              <a class="channel" href="https://github.com" target="_blank" rel="noreferrer">GITHUB →</a>
+              <a class="channel" href="https://linkedin.com" target="_blank" rel="noreferrer">LINKEDIN →</a>
+              <a class="channel" href="mailto:cael@example.com">EMAIL →</a>
+            </div>
+            <p class="quote">The World yields to those who transmit their truth without fear.</p>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <aside id="status-column">
+      <div id="dot-nav" aria-label="Section navigation" role="navigation">
+        <button class="dot-nav active" data-target="origin" aria-label="Go to Origin"></button>
+        <button class="dot-nav" data-target="chronicle" aria-label="Go to Chronicle"></button>
+        <button class="dot-nav" data-target="arcana" aria-label="Go to Arcana"></button>
+        <button class="dot-nav" data-target="compendium" aria-label="Go to Compendium"></button>
+        <button class="dot-nav" data-target="transmit" aria-label="Go to Transmit"></button>
+      </div>
+      <div id="status-readout">
+        <span id="clock-readout">00:00:00</span>
+        <span id="sector-readout">SECTOR · ORIGIN</span>
+        <span>ARCHETYPE ACTIVE</span>
+        <span id="status-mode">READY</span>
+      </div>
+    </aside>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script>
+    const state = {
+      current: "origin",
+      transitioning: false,
+      navOpen: false,
+      audioEnabled: false,
+      mouseX: innerWidth / 2,
+      mouseY: innerHeight / 2,
+      reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
+      sections: ["origin", "chronicle", "arcana", "compendium", "transmit"],
+      profiles: {
+        origin: { speed: 1.0, ringScale: 1.08, ringOpacity: 0.06, mood: "READY", cameraLerp: 0.03 },
+        chronicle: { speed: 0.68, ringScale: 0.82, ringOpacity: 0.03, mood: "ARCHIVING", cameraLerp: 0.02 },
+        arcana: { speed: 1.2, ringScale: 1.18, ringOpacity: 0.1, mood: "INDEXING", cameraLerp: 0.035 },
+        compendium: { speed: 1.3, ringScale: 1.24, ringOpacity: 0.12, mood: "UNSEALING", cameraLerp: 0.038 },
+        transmit: { speed: 0.84, ringScale: 0.92, ringOpacity: 0.05, mood: "CHANNEL OPEN", cameraLerp: 0.024 }
+      }
+    };
+
+    let bg = null;
+    const audio = { ctx: null, master: null, humOsc: null, humGain: null };
+
+    function initLoader() {
+      const text = document.getElementById("loader-text");
+      const bar = document.getElementById("loader-bar");
+      const labels = ["INITIALIZING ARCHETYPE", "LOADING COMPENDIUM", "AWAKENING SYSTEMS"];
+      let start = 0;
+      let swap = 0;
+      let idx = 0;
+      function raf(t) {
+        if (!start) { start = t; swap = t; }
+        const p = Math.min((t - start) / 2200, 1);
+        bar.style.width = (p * 100) + "%";
+        if (t - swap > 700 && p < 1) { idx = (idx + 1) % labels.length; text.textContent = labels[idx]; swap = t; }
+        if (p < 1) requestAnimationFrame(raf);
+        else {
+          text.textContent = "WELCOME, ARCHITECT";
+          setTimeout(() => {
+            const loader = document.getElementById("loader");
+            loader.classList.add("hidden");
+            setTimeout(() => {
+              loader.style.display = "none";
+              document.body.classList.remove("loading");
+              document.body.classList.add("ready");
+              animateSectionIn(state.current);
+            }, 620);
+          }, 400);
+        }
+      }
+      requestAnimationFrame(raf);
+    }
+
+    function initCursor() {
+      const core = document.getElementById("cursor-core");
+      const orbit = document.getElementById("cursor-orbit");
+      if (innerWidth < 900) return;
+      let tx = state.mouseX, ty = state.mouseY, ox = tx, oy = ty;
+      addEventListener("mousemove", (e) => { tx = e.clientX; ty = e.clientY; state.mouseX = tx; state.mouseY = ty; });
+      document.addEventListener("mouseover", (e) => {
+        if (e.target && e.target.closest("a,button,[role=menuitem],.arcana-card,.relic,input,textarea")) document.body.classList.add("cursor-hover");
+      });
+      document.addEventListener("mouseout", (e) => {
+        if (e.target && e.target.closest("a,button,[role=menuitem],.arcana-card,.relic,input,textarea")) document.body.classList.remove("cursor-hover");
+      });
+      (function loop() {
+        core.style.left = tx + "px"; core.style.top = ty + "px";
+        ox += (tx - ox) * 0.18; oy += (ty - oy) * 0.18;
+        orbit.style.left = ox + "px"; orbit.style.top = oy + "px";
+        requestAnimationFrame(loop);
+      })();
+    }
+
+    function initBackground() {
+      const canvas = document.getElementById("bg-3d");
+      if (!canvas || typeof THREE === "undefined") return;
+      const mobile = innerWidth < 768;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 2000);
+      camera.position.z = 350;
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setClearColor(0x000000, 0);
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setSize(innerWidth, innerHeight);
+
+      const starCount = mobile ? 800 : 1800;
+      const sg = new THREE.BufferGeometry();
+      const pos = new Float32Array(starCount * 3);
+      const col = new Float32Array(starCount * 3);
+      const cg = new THREE.Color(0xc9a84c), ct = new THREE.Color(0x00e5c8), cw = new THREE.Color(0xffffff);
+      for (let i = 0; i < starCount; i++) {
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(Math.random() * 2 - 1);
+        const r = Math.random() * 800;
+        const j = i * 3;
+        pos[j] = r * Math.sin(phi) * Math.cos(theta);
+        pos[j + 1] = r * Math.sin(phi) * Math.sin(theta);
+        pos[j + 2] = r * Math.cos(phi);
+        const roll = Math.random();
+        const c = roll < 0.4 ? cg : roll < 0.55 ? ct : cw;
+        col[j] = c.r; col[j + 1] = c.g; col[j + 2] = c.b;
+      }
+      sg.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+      sg.setAttribute("color", new THREE.BufferAttribute(col, 3));
+      const stars = new THREE.Points(sg, new THREE.PointsMaterial({ size: 1.5, vertexColors: true, transparent: true, opacity: 0.82 }));
+      scene.add(stars);
+
+      const root = new THREE.Group();
+      const ico = new THREE.Mesh(new THREE.IcosahedronGeometry(92, 1), new THREE.MeshBasicMaterial({ wireframe: true, color: 0x0a1535, transparent: true, opacity: 0.6 }));
+      const torus = new THREE.Mesh(new THREE.TorusGeometry(60, 1.5, 8, 40), new THREE.MeshBasicMaterial({ color: 0xc9a84c, transparent: true, opacity: 0.08 }));
+      root.add(ico); root.add(torus);
+      const rings = [];
+      if (!mobile) {
+        [0, Math.PI / 3, (2 * Math.PI) / 3].forEach((a) => {
+          const ring = new THREE.Mesh(new THREE.TorusGeometry(122, 0.8, 8, 100), new THREE.MeshBasicMaterial({ color: 0x00e5c8, transparent: true, opacity: 0.04 }));
+          ring.rotation.y = a; ring.rotation.x = a * 0.7;
+          rings.push(ring); root.add(ring);
+        });
+      }
+      scene.add(root);
+
+      const runes = [];
+      const chars = ["ᛏ", "ᚦ", "ᚱ", "ᛖ", "ᚹ", "ᛗ", "ᛟ", "ᛞ"];
+      for (let i = 0; i < 28; i++) {
+        const cv = document.createElement("canvas");
+        cv.width = 128; cv.height = 128;
+        const cx = cv.getContext("2d");
+        cx.fillStyle = "rgba(201,168,76,0.9)";
+        cx.font = "64px Cinzel";
+        cx.textAlign = "center"; cx.textBaseline = "middle";
+        cx.fillText(chars[i % chars.length], 64, 64);
+        const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, opacity: 0.45 }));
+        sprite.scale.set(8, 8, 1);
+        const r = 50 + Math.random() * 170;
+        const a = Math.random() * Math.PI * 2;
+        const y = (Math.random() - 0.5) * 190;
+        sprite.position.set(Math.cos(a) * r, y, Math.sin(a) * r);
+        scene.add(sprite);
+        runes.push({ sprite, baseY: y, phase: Math.random() * Math.PI * 2, speed: 0.35 + Math.random() * 0.7 });
+      }
+
+      bg = { scene, camera, renderer, stars, ico, torus, rings, runes, speed: 1, ringScale: 1, ringOpacity: 0.04, cameraLerp: 0.03 };
+      applyProfile(state.current);
+
+      let prev = performance.now();
+      (function render(now) {
+        const dt = Math.min((now - prev) / 16.67, 2);
+        prev = now;
+        const m = state.reducedMotion ? 0 : 1;
+        const sp = bg.speed;
+        stars.rotation.y += 0.00015 * dt * sp * m;
+        ico.rotation.y += 0.001 * dt * sp * m;
+        ico.rotation.x += 0.0005 * dt * sp * m;
+        torus.rotation.x += 0.002 * dt * sp * m;
+        torus.rotation.z += 0.001 * dt * sp * m;
+        const rs = [0.003, -0.002, 0.0015];
+        rings.forEach((ring, i) => {
+          ring.rotation.z += rs[i] * dt * sp * m;
+          ring.scale.set(bg.ringScale, bg.ringScale, bg.ringScale);
+          ring.material.opacity += (bg.ringOpacity - ring.material.opacity) * 0.08;
+        });
+        runes.forEach((r) => {
+          const t = now * 0.001;
+          r.sprite.position.y = r.baseY + Math.sin((t * r.speed) + r.phase) * (state.current === "arcana" ? 12 : 8) * m;
+          r.sprite.material.opacity = 0.2 + ((Math.sin((t * (0.8 + r.speed)) + r.phase) + 1) * 0.5) * 0.52;
+        });
+        camera.position.x += ((((state.mouseX / innerWidth) - 0.5) * 20) - camera.position.x) * bg.cameraLerp;
+        camera.position.y += ((((state.mouseY / innerHeight) - 0.5) * -12) - camera.position.y) * bg.cameraLerp;
+        renderer.render(scene, camera);
+        requestAnimationFrame(render);
+      })(performance.now());
+
+      addEventListener("resize", () => {
+        camera.aspect = innerWidth / innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(innerWidth, innerHeight);
+      });
+    }
+
+    function applyProfile(id) {
+      if (!bg) return;
+      const p = state.profiles[id];
+      bg.speed = p.speed; bg.ringScale = p.ringScale; bg.ringOpacity = p.ringOpacity; bg.cameraLerp = p.cameraLerp;
+      document.getElementById("tele-state").textContent = p.mood;
+      document.getElementById("status-mode").textContent = p.mood;
+    }
+
+    function initNav() {
+      const menuItems = [...document.querySelectorAll(".menu-item")];
+      const dots = [...document.querySelectorAll(".dot-nav")];
+      const tele = document.getElementById("menu-telemetry");
+      const teleSector = document.getElementById("tele-sector");
+      const teleArcana = document.getElementById("tele-arcana");
+      const menuToggle = document.getElementById("menu-toggle");
+      const backdrop = document.getElementById("menu-mobile-backdrop");
+      const originEnter = document.getElementById("origin-enter");
+      function setOpen(v) {
+        state.navOpen = v;
+        document.body.classList.toggle("menu-open", v);
+        menuToggle.classList.toggle("open", v);
+      }
+      menuToggle.addEventListener("click", () => setOpen(!state.navOpen));
+      backdrop.addEventListener("click", () => setOpen(false));
+      function preview(item) {
+        teleSector.textContent = item.querySelector(".menu-label").textContent;
+        teleArcana.textContent = item.querySelector(".menu-arcana").textContent;
+        tele.classList.add("preview");
+        gsap.fromTo("#command-rail", { x: 0 }, { x: 2, duration: 0.12, yoyo: true, repeat: 1 });
+      }
+      menuItems.forEach((item) => {
+        const target = item.dataset.target;
+        item.addEventListener("mouseenter", () => preview(item));
+        item.addEventListener("mouseleave", () => tele.classList.remove("preview"));
+        item.addEventListener("click", () => { navigateTo(target); setOpen(false); playClick(); });
+        item.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigateTo(target); setOpen(false); playClick(); } });
+      });
+      dots.forEach((dot) => dot.addEventListener("click", () => { navigateTo(dot.dataset.target); playClick(); }));
+      originEnter.addEventListener("click", () => navigateTo("chronicle"));
+
+      const rail = document.getElementById("command-rail");
+      const dotNav = document.getElementById("dot-nav");
+      function menuStep(dir) {
+        const idx = state.sections.indexOf(state.current);
+        const next = dir > 0 ? Math.min(idx + 1, state.sections.length - 1) : Math.max(idx - 1, 0);
+        if (next !== idx) { navigateTo(state.sections[next]); playClick(); }
+      }
+      rail.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowDown") { e.preventDefault(); menuStep(1); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); menuStep(-1); }
+      });
+      dotNav.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowDown") { e.preventDefault(); menuStep(1); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); menuStep(-1); }
+      });
+
+      addEventListener("keydown", (e) => {
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+        const t = e.target;
+        if (t && t.closest && t.closest("input, textarea")) return;
+        if (e.key === "Escape" && state.navOpen) { setOpen(false); return; }
+        const codeMap = {
+          Digit1: "origin", Digit2: "chronicle", Digit3: "arcana", Digit4: "compendium", Digit5: "transmit",
+          Numpad1: "origin", Numpad2: "chronicle", Numpad3: "arcana", Numpad4: "compendium", Numpad5: "transmit"
+        };
+        const jump = codeMap[e.code];
+        if (jump) { e.preventDefault(); navigateTo(jump); playClick(); }
+      });
+    }
+
+    function navigateTo(id) {
+      if (state.transitioning || id === state.current || !state.sections.includes(id)) return;
+      state.transitioning = true;
+      const lock = document.querySelector(".menu-item.active");
+      const curtain = document.getElementById("transition-curtain");
+      const plate = document.getElementById("transition-plate");
+      const sigil = document.getElementById("transition-sigil");
+      const tl = gsap.timeline({ onComplete: () => { state.transitioning = false; } });
+      if (lock) tl.to(lock, { filter: "brightness(1.35)", duration: 0.08, yoyo: true, repeat: 1 }, 0);
+      tl.set([curtain, plate], { x: "-100%" });
+      tl.set(sigil, { opacity: 0, scale: 0.8 });
+      tl.to(curtain, { x: "0%", duration: 0.24, ease: "power2.in" }, 0.05);
+      tl.to(plate, { x: "0%", duration: 0.3, ease: "power2.inOut" }, 0.1);
+      tl.to(sigil, { opacity: 1, scale: 1, duration: 0.12, ease: "power2.out" }, 0.23);
+      tl.call(() => showSection(id));
+      tl.to(sigil, { opacity: 0, scale: 1.1, duration: 0.12, ease: "power2.in" });
+      tl.to(plate, { x: "100%", duration: 0.28, ease: "power2.out" }, "-=0.02");
+      tl.to(curtain, { x: "100%", duration: 0.32, ease: "power2.out" }, "-=0.22");
+    }
+
+    function showSection(id) {
+      const prev = document.getElementById("section-" + state.current);
+      const next = document.getElementById("section-" + id);
+      const focusEl = document.activeElement;
+      const keepRailFocus = focusEl && focusEl.closest && focusEl.closest("#command-rail");
+      if (prev) prev.classList.remove("active");
+      if (next) next.classList.add("active");
+      state.current = id;
+      document.querySelectorAll(".menu-item").forEach((i) => {
+        const on = i.dataset.target === id;
+        i.classList.toggle("active", on);
+        i.setAttribute("tabindex", on ? "0" : "-1");
+        if (on) i.setAttribute("aria-current", "page");
+        else i.removeAttribute("aria-current");
+      });
+      document.querySelectorAll(".dot-nav").forEach((i) => i.classList.toggle("active", i.dataset.target === id));
+      const active = document.querySelector(".menu-item.active");
+      if (active) {
+        const label = active.querySelector(".menu-label").textContent;
+        document.getElementById("tele-sector").textContent = label;
+        document.getElementById("tele-arcana").textContent = active.querySelector(".menu-arcana").textContent;
+        const sr = document.getElementById("sector-readout");
+        if (sr) sr.textContent = "SECTOR · " + label;
+      }
+      applyProfile(id);
+      animateSectionIn(id);
+      if (keepRailFocus && active) active.focus();
+    }
+
+    function animateSectionIn(id) {
+      const section = document.getElementById("section-" + id);
+      const items = section.querySelectorAll("[data-animate]");
+      const map = {
+        origin: { y: 34, duration: 0.58, stagger: 0.1 },
+        chronicle: { y: 24, duration: 0.62, stagger: 0.08 },
+        arcana: { y: 18, duration: 0.52, stagger: 0.05 },
+        compendium: { y: 20, duration: 0.54, stagger: 0.06 },
+        transmit: { y: 22, duration: 0.58, stagger: 0.08 }
+      };
+      const v = map[id];
+      gsap.fromTo(items, { y: v.y, opacity: 0 }, { y: 0, opacity: 1, duration: v.duration, stagger: v.stagger, ease: "power3.out", clearProps: "all" });
+      if (id === "chronicle") animateStats();
+      if (id === "arcana") gsap.fromTo("#section-arcana .arcana-card", { rotateX: -8 }, { rotateX: 0, duration: 0.42, stagger: 0.04 });
+      if (id === "compendium") gsap.fromTo("#section-compendium .relic", { y: 24, rotateY: -8 }, { y: 0, rotateY: 0, duration: 0.5, stagger: 0.05 });
+    }
+
+    function animateStats() {
+      document.querySelectorAll(".stat-fill").forEach((s, i) => gsap.fromTo(s, { width: "0%" }, { width: (Number(s.dataset.level || 0)) + "%", duration: 1.1, delay: i * 0.1, ease: "power2.out" }));
+    }
+
+    function initArcanaOracle() {
+      const cards = [...document.querySelectorAll("#section-arcana .arcana-card")];
+      const n = document.getElementById("arcana-focus-name");
+      const r = document.getElementById("arcana-focus-rank");
+      const d = document.getElementById("arcana-focus-desc");
+      function set(card) {
+        cards.forEach((c) => c.classList.remove("active-focus"));
+        card.classList.add("active-focus");
+        n.textContent = card.dataset.focusName;
+        r.textContent = card.dataset.focusRank;
+        d.textContent = card.dataset.focusDesc;
+      }
+      cards.forEach((card) => {
+        card.addEventListener("mouseenter", () => set(card));
+        card.addEventListener("focusin", () => set(card));
+      });
+    }
+
+    function initRelicTilt() {
+      document.querySelectorAll(".relic").forEach((card) => {
+        let tx = 0, ty = 0, rx = 0, ry = 0;
+        (function raf() {
+          rx += (tx - rx) * 0.12; ry += (ty - ry) * 0.12;
+          card.style.transform = "perspective(860px) rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg)";
+          requestAnimationFrame(raf);
+        })();
+        card.addEventListener("mousemove", (e) => {
+          const b = card.getBoundingClientRect();
+          const x = (e.clientX - b.left) / b.width;
+          const y = (e.clientY - b.top) / b.height;
+          tx = (0.5 - y) * 16;
+          ty = (x - 0.5) * 16;
+        });
+        card.addEventListener("mouseleave", () => { tx = 0; ty = 0; });
+      });
+    }
+
+    function initGlitch() {
+      const t = document.getElementById("origin-name");
+      let next = performance.now() + rand(4000, 8000);
+      (function loop(now) {
+        if (now >= next && state.current === "origin" && !state.reducedMotion) {
+          t.classList.add("glitching");
+          setTimeout(() => t.classList.remove("glitching"), 420);
+          next = now + rand(4000, 8000);
+        }
+        requestAnimationFrame(loop);
+      })(performance.now());
+    }
+
+    function initClock() {
+      const c = document.getElementById("clock-readout");
+      setInterval(() => {
+        const d = new Date();
+        c.textContent = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0") + ":" + String(d.getSeconds()).padStart(2, "0");
+      }, 1000);
+    }
+
+    function initForm() {
+      const form = document.querySelector(".trans-panel");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const span = form.querySelector(".submit span");
+        const old = span.textContent;
+        span.textContent = "SIGNAL SEALED";
+        setTimeout(() => { span.textContent = old; form.reset(); }, 1400);
+      });
+    }
+
+    function initAudio() {
+      const btn = document.getElementById("audio-toggle");
+      btn.addEventListener("click", async () => {
+        if (!audio.ctx) {
+          audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
+          audio.master = audio.ctx.createGain();
+          audio.master.gain.value = 0.15;
+          audio.master.connect(audio.ctx.destination);
+        }
+        if (audio.ctx.state === "suspended") await audio.ctx.resume();
+        state.audioEnabled = !state.audioEnabled;
+        btn.classList.toggle("enabled", state.audioEnabled);
+        btn.textContent = state.audioEnabled ? "♪ ON" : "♪";
+        if (state.audioEnabled) { startHum(); playClick(); } else stopHum();
+      });
+      document.addEventListener("mouseover", (e) => {
+        if (e.target && e.target.closest("a,button,[role=menuitem],.arcana-card,.relic,input,textarea")) playHover();
+      });
+    }
+    function startHum() {
+      if (!audio.ctx || audio.humOsc) return;
+      const o = audio.ctx.createOscillator();
+      const g = audio.ctx.createGain();
+      o.type = "triangle"; o.frequency.value = 60;
+      g.gain.value = 0.02;
+      o.connect(g); g.connect(audio.master);
+      o.start();
+      audio.humOsc = o; audio.humGain = g;
+    }
+    function stopHum() {
+      if (!audio.humOsc) return;
+      audio.humGain.gain.setTargetAtTime(0.0001, audio.ctx.currentTime, 0.08);
+      audio.humOsc.stop(audio.ctx.currentTime + 0.2);
+      audio.humOsc = null; audio.humGain = null;
+    }
+    function tone(freq, dur, gain, type) {
+      if (!state.audioEnabled || !audio.ctx || !audio.master) return;
+      const o = audio.ctx.createOscillator();
+      const g = audio.ctx.createGain();
+      const n = audio.ctx.currentTime;
+      o.type = type || "triangle";
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, n);
+      g.gain.linearRampToValueAtTime(gain, n + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, n + dur);
+      o.connect(g); g.connect(audio.master);
+      o.start(n); o.stop(n + dur);
+    }
+    function playHover() { tone(1200, 0.03, 0.02, "triangle"); }
+    function playClick() { tone(880, 0.1, 0.05, "triangle"); }
+    function rand(a, b) { return a + Math.random() * (b - a); }
+
+    function init() {
+      if (window.gsap && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+      initCursor();
+      initBackground();
+      initNav();
+      initArcanaOracle();
+      initRelicTilt();
+      initGlitch();
+      initClock();
+      initForm();
+      initAudio();
+      initLoader();
+    }
+    addEventListener("load", init);
+  </script>
+</body>
 </html>
